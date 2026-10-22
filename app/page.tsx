@@ -1,69 +1,67 @@
-import Image from "next/image";
+const notes = [
+  { className: "note note-one", glyph: "♫" },
+  { className: "note note-two", glyph: "♪" },
+  { className: "note note-three", glyph: "♬" },
+  { className: "note note-four", glyph: "♪" },
+];
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="landing-page">
+      <nav className="topbar" aria-label="Main navigation">
+        <a className="wordmark" href="#top" aria-label="Muxics home">
+          <span className="brand-mark" aria-hidden="true">m</span>
+          muxics<span className="brand-period">.</span>
+        </a>
+        <div className="nav-links">
+          <a href="#discover">Discover</a>
+          <a href="#about">About</a>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <a className="nav-cta" href="#discover">Find your sound <span aria-hidden="true">↗</span></a>
+      </nav>
+
+      <section className="hero" id="top">
+        <div className="hero-copy">
+          <div className="eyebrow"><span className="eyebrow-dot" /> YOUR NEXT FAVORITE THING</div>
+          <h1>Life sounds<br />better <span>together.</span></h1>
+          <p className="hero-description">A little corner of the internet for big feelings, good songs, and the people who get it.</p>
+          <div className="hero-actions">
+            <a className="button button-primary" href="#discover">Come on in <span aria-hidden="true">→</span></a>
+            <a className="text-link" href="#about">What is Muxics? <span aria-hidden="true">↗</span></a>
+          </div>
+          <div className="tiny-note"><span aria-hidden="true">✳</span> Made for music people, by music people</div>
         </div>
-      </main>
-    </div>
+
+        <div className="hero-art" aria-label="Colorful hand-drawn music player and music notes" role="img">
+          <div className="sunburst" />
+          <div className="scribble scribble-left">〰</div>
+          {notes.map((note) => <span key={note.className} className={note.className} aria-hidden="true">{note.glyph}</span>)}
+          <span className="sparkle sparkle-one" aria-hidden="true">✳</span>
+          <span className="sparkle sparkle-two" aria-hidden="true">✦</span>
+          <div className="orbit orbit-one" />
+          <div className="orbit orbit-two" />
+          <div className="player-card">
+            <div className="player-topline"><span>NOW PLAYING</span><span>•••</span></div>
+            <div className="record-wrap">
+              <div className="record"><div className="record-label"><span>mx</span></div></div>
+              <div className="record-arm"><i /></div>
+            </div>
+            <div className="track-info"><div><strong>Good Things</strong><span>The Sunroom Kids</span></div><span className="heart" aria-hidden="true">♥</span></div>
+            <div className="progress"><span /></div>
+            <div className="player-controls"><span aria-hidden="true">↶</span><span className="play" aria-hidden="true">▶</span><span aria-hidden="true">↷</span></div>
+          </div>
+          <div className="sticker sticker-spark">GOOD<br />VIBES<br /><span>ONLY</span></div>
+          <div className="sticker sticker-flower" aria-hidden="true"><span>✿</span></div>
+          <div className="caption-pill"><span className="caption-icon">♫</span> the soundtrack to your next chapter</div>
+        </div>
+      </section>
+
+      <section className="bottom-strip" id="discover">
+        <div className="strip-copy"><span className="strip-spark" aria-hidden="true">✳</span><div><strong>There’s a song for that.</strong><span>And probably someone else feeling it too.</span></div></div>
+        <div className="genre-list" aria-label="Music for every mood"><span>indie daydreams</span><i>✳</i><span>kitchen dancing</span><i>✳</i><span>main character walks</span></div>
+        <a className="strip-link" href="#about" aria-label="Learn about Muxics">↗</a>
+      </section>
+      <footer id="about"><span>muxics<span className="brand-period">.</span></span><span>A softer place to land between songs.</span><span>© 2025 Muxics</span></footer>
+    </main>
   );
 }
