@@ -4,6 +4,8 @@ import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
 import { decideApplication } from "../../actions";
 
+export const instant = false;
+
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ message?: string; error?: string }> };
 
 export default async function ManageOpportunityPage({ params, searchParams }: Props) {
