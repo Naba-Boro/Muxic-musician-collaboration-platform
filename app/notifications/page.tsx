@@ -4,6 +4,8 @@ import { extendGigDeadline, markNotificationsRead } from "@/app/actions";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
 
+export const instant = false;
+
 type Notification = { id: string; event_type: string; reference_type: string | null; reference_id: string | null; body: string; read_at: string | null; created_at: string };
 
 function notificationHref(item: Notification, ownerIds: Set<string>, userId: string) {
