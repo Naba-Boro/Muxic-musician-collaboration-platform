@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { createGig } from "../../actions";
 
+export const instant = false;
+
 type Props = { searchParams: Promise<{ error?: string }> };
 
 export default async function NewOpportunityPage({ searchParams }: Props) {

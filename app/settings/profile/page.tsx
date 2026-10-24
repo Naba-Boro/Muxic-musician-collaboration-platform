@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
 import { updateProfile } from "../../actions";
@@ -7,6 +8,7 @@ import { updateProfile } from "../../actions";
 type Props = { searchParams: Promise<{ message?: string; error?: string }> };
 
 export default async function ProfileSettingsPage({ searchParams }: Props) {
+  await connection();
   const { message, error } = await searchParams;
   if (!isSupabaseConfigured()) return <main className="simple-auth-page"><Link className="brand" href="/"><span className="brand-icon">♫</span><span>Muxics<span className="brand-dot">.</span></span></Link><section className="simple-auth-card"><h1>Profile settings</h1><p>Connect Supabase to edit your profile.</p></section></main>;
   const supabase = await createClient();
