@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
 
+export const instant = false;
+
 export default async function MyOpportunitiesPage() {
   if (!isSupabaseConfigured()) return <main className="simple-auth-page"><Link className="brand" href="/"><span className="brand-icon">♫</span><span>Muxics<span className="brand-dot">.</span></span></Link><section className="simple-auth-card"><h1>Your posted gigs</h1><p>Connect Supabase to view your opportunities and applicants.</p><Link className="small-link back-link" href="/">Back to sign in</Link></section></main>;
   const supabase = await createClient();

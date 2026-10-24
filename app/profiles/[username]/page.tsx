@@ -2,6 +2,8 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
+
+export const instant = false;
 import { blockUser } from "../../actions";
 
 type Props = { params: Promise<{ username: string }> };

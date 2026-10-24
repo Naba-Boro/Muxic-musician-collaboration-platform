@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { signUp } from "../actions";
+
+export const instant = false;
 import { AudioDemoInput } from "./audio-demo-input";
 
 type SignupPageProps = { searchParams: Promise<{ error?: string }> };

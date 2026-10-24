@@ -3,6 +3,8 @@ import { notFound, redirect } from "next/navigation";
 import { completeProject, deleteProjectHistoryCopy, recordProjectExit, respondToProjectExit } from "@/app/actions";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
+
+export const instant = false;
 import { ProjectChat, type ProjectMessage } from "../project-chat";
 import { PrintHistoryButton } from "../print-history-button";
 

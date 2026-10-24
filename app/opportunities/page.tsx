@@ -2,6 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
+
+export const instant = false;
 import { signOut } from "../actions";
 import { OpportunityFeed, type Opportunity } from "./opportunity-feed";
 
