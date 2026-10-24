@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { signIn } from "./actions";
 
+export const instant = false;
+
 type LoginPageProps = {
   searchParams: Promise<{ error?: string; message?: string }>;
 };
