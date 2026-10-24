@@ -1,67 +1,76 @@
-const notes = [
-  { className: "note note-one", glyph: "♫" },
-  { className: "note note-two", glyph: "♪" },
-  { className: "note note-three", glyph: "♬" },
-  { className: "note note-four", glyph: "♪" },
-];
+import Link from "next/link";
+import { signIn } from "./actions";
 
-export default function Home() {
+type LoginPageProps = {
+  searchParams: Promise<{ error?: string; message?: string }>;
+};
+
+export default async function LoginPage({ searchParams }: LoginPageProps) {
+  const { error, message } = await searchParams;
+
   return (
-    <main className="landing-page">
-      <nav className="topbar" aria-label="Main navigation">
-        <a className="wordmark" href="#top" aria-label="Muxics home">
-          <span className="brand-mark" aria-hidden="true">m</span>
-          muxics<span className="brand-period">.</span>
-        </a>
-        <div className="nav-links">
-          <a href="#discover">Discover</a>
-          <a href="#about">About</a>
-        </div>
-        <a className="nav-cta" href="#discover">Find your sound <span aria-hidden="true">↗</span></a>
-      </nav>
+    <main className="auth-layout">
+      <section className="auth-art" aria-label="A place for musicians to find their next collaborators">
+        <Link className="brand" href="/" aria-label="Muxics home">
+          <span className="brand-icon" aria-hidden="true">♫</span>
+          <span>Muxics<span className="brand-dot">.</span></span>
+        </Link>
 
-      <section className="hero" id="top">
-        <div className="hero-copy">
-          <div className="eyebrow"><span className="eyebrow-dot" /> YOUR NEXT FAVORITE THING</div>
-          <h1>Life sounds<br />better <span>together.</span></h1>
-          <p className="hero-description">A little corner of the internet for big feelings, good songs, and the people who get it.</p>
-          <div className="hero-actions">
-            <a className="button button-primary" href="#discover">Come on in <span aria-hidden="true">→</span></a>
-            <a className="text-link" href="#about">What is Muxics? <span aria-hidden="true">↗</span></a>
+        <div className="art-copy">
+          <span className="eyebrow"><span className="eyebrow-mark">✳</span> MADE FOR MUSIC PEOPLE</span>
+          <h1>Make your<br />next thing<br /><em>together.</em></h1>
+          <p>Find the voice, hands, and ears your project is missing.</p>
+        </div>
+
+        <div className="sound-orbit sound-orbit-one" />
+        <div className="sound-orbit sound-orbit-two" />
+        <div className="note note-a" aria-hidden="true">♫</div>
+        <div className="note note-b" aria-hidden="true">♪</div>
+        <div className="note note-c" aria-hidden="true">♬</div>
+        <div className="art-card">
+          <span className="art-card-label">A GOOD PLACE TO START</span>
+          <div className="art-record"><span>mj</span></div>
+          <strong>Your next collaboration</strong>
+          <span className="art-card-caption">is closer than you think</span>
+          <div className="art-wave" aria-hidden="true"><i /><i /><i /><i /><i /><i /><i /><i /><i /><i /><i /><i /><i /><i /><i /><i /><i /></div>
+        </div>
+
+        <div className="art-footer"><span>✦</span> FIND YOUR PEOPLE. MAKE YOUR SOUND.</div>
+      </section>
+
+      <section className="auth-panel">
+        <div className="auth-panel-inner">
+          <div className="mobile-brand brand">
+            <span className="brand-icon" aria-hidden="true">♫</span>
+            <span>Muxics<span className="brand-dot">.</span></span>
           </div>
-          <div className="tiny-note"><span aria-hidden="true">✳</span> Made for music people, by music people</div>
-        </div>
+          <div className="auth-heading">
+            <span className="eyebrow">YOUR PEOPLE ARE HERE</span>
+            <h2>Welcome back</h2>
+            <p>Sign in to find your next music collaborator.</p>
+          </div>
 
-        <div className="hero-art" aria-label="Colorful hand-drawn music player and music notes" role="img">
-          <div className="sunburst" />
-          <div className="scribble scribble-left">〰</div>
-          {notes.map((note) => <span key={note.className} className={note.className} aria-hidden="true">{note.glyph}</span>)}
-          <span className="sparkle sparkle-one" aria-hidden="true">✳</span>
-          <span className="sparkle sparkle-two" aria-hidden="true">✦</span>
-          <div className="orbit orbit-one" />
-          <div className="orbit orbit-two" />
-          <div className="player-card">
-            <div className="player-topline"><span>NOW PLAYING</span><span>•••</span></div>
-            <div className="record-wrap">
-              <div className="record"><div className="record-label"><span>mx</span></div></div>
-              <div className="record-arm"><i /></div>
+          {message && <p className="notice notice-success" role="status">{message}</p>}
+          {error && <p className="notice notice-error" role="alert">{error}</p>}
+
+          <form className="auth-form" action={signIn}>
+            <label htmlFor="identifier">Email or username</label>
+            <input id="identifier" name="identifier" type="text" autoComplete="username" placeholder="you@example.com or yourname" required />
+
+            <div className="label-row">
+              <label htmlFor="password">Password</label>
+              <Link href="/forgot-password" className="small-link">Forgot password?</Link>
             </div>
-            <div className="track-info"><div><strong>Good Things</strong><span>The Sunroom Kids</span></div><span className="heart" aria-hidden="true">♥</span></div>
-            <div className="progress"><span /></div>
-            <div className="player-controls"><span aria-hidden="true">↶</span><span className="play" aria-hidden="true">▶</span><span aria-hidden="true">↷</span></div>
-          </div>
-          <div className="sticker sticker-spark">GOOD<br />VIBES<br /><span>ONLY</span></div>
-          <div className="sticker sticker-flower" aria-hidden="true"><span>✿</span></div>
-          <div className="caption-pill"><span className="caption-icon">♫</span> the soundtrack to your next chapter</div>
+            <input id="password" name="password" type="password" autoComplete="current-password" placeholder="Enter your password" required />
+
+            <button className="button button-primary" type="submit">Sign in <span aria-hidden="true">→</span></button>
+          </form>
+
+          <div className="auth-divider"><span>NEW TO MUXICS?</span></div>
+          <Link className="button button-secondary" href="/signup">Create your profile <span aria-hidden="true">↗</span></Link>
+          <p className="auth-legal">By continuing, you confirm that you are 18 or older.</p>
         </div>
       </section>
-
-      <section className="bottom-strip" id="discover">
-        <div className="strip-copy"><span className="strip-spark" aria-hidden="true">✳</span><div><strong>There’s a song for that.</strong><span>And probably someone else feeling it too.</span></div></div>
-        <div className="genre-list" aria-label="Music for every mood"><span>indie daydreams</span><i>✳</i><span>kitchen dancing</span><i>✳</i><span>main character walks</span></div>
-        <a className="strip-link" href="#about" aria-label="Learn about Muxics">↗</a>
-      </section>
-      <footer id="about"><span>muxics<span className="brand-period">.</span></span><span>A softer place to land between songs.</span><span>© 2025 Muxics</span></footer>
     </main>
   );
 }
