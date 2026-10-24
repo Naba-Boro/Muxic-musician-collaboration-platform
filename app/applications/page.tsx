@@ -4,6 +4,8 @@ import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
 import { withdrawApplication } from "../actions";
 
+export const instant = false;
+
 type Props = { searchParams: Promise<{ message?: string; error?: string }> };
 
 export default async function ApplicationsPage({ searchParams }: Props) {
