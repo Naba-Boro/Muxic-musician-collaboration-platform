@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { requestPasswordReset } from "../actions";
 
+export const instant = false;
+
 type Props = { searchParams: Promise<{ error?: string; message?: string }> };
 
 export default async function ForgotPasswordPage({ searchParams }: Props) {
