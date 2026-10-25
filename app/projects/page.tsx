@@ -33,7 +33,11 @@ export default async function ProjectsPage() {
   }
 
   const items: ProjectListItem[] = projectRows.map((project, index) => {
-    const participants = participantResults[index]?.data ?? [];
+    const participants = (participantResults[index]?.data ?? []) as Array<{
+      user_id: string;
+      display_name: string;
+      member_status: string;
+    }>;
     const latest = latestMessageByProject.get(project.id);
     const latestSender = latest ? participants.find((person) => person.user_id === latest.sender_id) : null;
     return {
