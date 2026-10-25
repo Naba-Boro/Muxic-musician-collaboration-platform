@@ -11,18 +11,38 @@ function WaveMark() {
 
 export default async function ResetPasswordPage({ searchParams }: Props) {
   const { error } = await searchParams;
-  return (
-    <main className="auth-page auth-reset-page">
-      <header className="auth-topbar">
-        <Link href="/" className="auth-brand" aria-label="Muxics home"><span className="auth-brand-mark"><WaveMark /></span><span>Muxics<span className="brand-dot">.</span></span></Link>
-        <div className="auth-session"><span className="auth-live-dot" /> ACCOUNT RECOVERY <span className="auth-topbar-divider">//</span> SECURE RESET</div>
-        <Link className="auth-route auth-reset-back" href="/">BACK TO <b>SIGN IN</b></Link>
-      </header>
-      <div className="auth-reset-main">
-        <section className="auth-reset-intro"><span className="auth-kicker"><span aria-hidden="true">✳</span> ACCOUNT ACCESS</span><h1>Back to making<br /><em>music together.</em></h1><p>Choose a new password for your Muxics account. Use at least eight characters.</p><div className="auth-reset-note"><span aria-hidden="true">♫</span><span>Keep your account secure. Your new password must match in both fields.</span></div></section>
-        <section className="auth-panel auth-reset-panel" aria-label="Set a new password"><div className="auth-panel-inner"><div className="auth-card"><div className="auth-card-topline"><span><i /> RESET SESSION</span><span>SECURE LINK</span></div><div className="auth-card-heading"><span className="auth-field-code">PASSWORD UPDATE // 02</span><h2>Choose a new password</h2><p>Set a new key for your Muxics account.</p></div><PasswordResetForm error={error} /></div></div></section>
-      </div>
-      <footer className="auth-footer"><span><b>MUXICS</b> MUSICIAN COLLABORATION</span><span>Independent musicians, connected across India.</span><span>SECURE ACCOUNT ACCESS <i>♫</i></span></footer>
-    </main>
-  );
+  return <main className="auth-page recovery-page">
+    <header className="auth-topbar">
+      <Link href="/" className="auth-brand" aria-label="Muxics home"><span className="auth-brand-mark"><WaveMark /></span><span>Muxics<span className="brand-dot">.</span></span></Link>
+      <div className="auth-session"><span className="auth-live-dot" /> ACCOUNT RECOVERY <span className="auth-topbar-divider">//</span> SET PASSWORD</div>
+      <Link className="auth-route" href="/">← BACK TO <b>SIGN IN</b></Link>
+    </header>
+
+    <div className="recovery-main reset-main">
+      <section className="recovery-intro">
+        <span className="auth-kicker">STAGE GATE 02 <span>·</span> STUDIO IDENTITY DESK</span>
+        <h1>Choose a new password</h1>
+        <p>Set a new password for your account, then sign in and return to your projects.</p>
+        <div className="recovery-steps" aria-label="Password recovery steps">
+          <Link href="/forgot-password"><i>1</i> Request link</Link><span className="recovery-step-line" /><span className="is-current"><i>2</i> Set password</span>
+        </div>
+      </section>
+
+      <section className="reset-workspace" aria-label="Set a new password">
+        <div className="reset-form-panel">
+          <div className="recovery-panel-top"><span><i /> PASSWORD UPDATE</span><span>RESET LINK REQUIRED</span></div>
+          <div className="reset-form-body">
+            <div className="reset-form-intro"><span className="auth-field-code">NEW ACCOUNT KEY</span><h2>Set a new password</h2><p>Choose at least 8 characters and enter it again to confirm.</p></div>
+            <PasswordResetForm error={error} />
+          </div>
+        </div>
+        <aside className="recovery-aside reset-aside">
+          <section className="recovery-help-card"><div className="recovery-aside-icon" aria-hidden="true">⌑</div><div><h2>Use your reset email</h2><p>This page works after you open the password reset link sent to your email.</p><Link href="/forgot-password">Request a new link <span aria-hidden="true">→</span></Link></div></section>
+          <div className="recovery-security-note"><span aria-hidden="true">◇</span><p><b>Choose a private password</b><br />Don’t reuse a password you share with another service.</p></div>
+        </aside>
+      </section>
+    </div>
+
+    <footer className="auth-footer"><span><b>MUXICS</b> MUSICIAN COLLABORATION</span><span>Independent musicians, connected across India.</span><span>SECURE ACCOUNT ACCESS <i>♫</i></span></footer>
+  </main>;
 }

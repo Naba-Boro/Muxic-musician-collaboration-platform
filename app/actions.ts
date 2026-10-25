@@ -231,21 +231,36 @@ export async function extendGigDeadline(formData: FormData) {
   const gigId = clean(formData.get("gigId"));
   const date = clean(formData.get("deadlineDate"));
   const time = clean(formData.get("deadlineTime")) || "23:59";
+  const returnTo = clean(formData.get("returnTo"));
+  const destination = returnTo === "/my-opportunities" || (/^[0-9a-f-]{36}$/i.test(gigId) && returnTo === "/my-opportunities/" + gigId) ? returnTo : "/notifications";
   const deadlineAt = new Date(`${date}T${time}:00+05:30`);
-  if (!isSupabaseConfigured()) redirect("/notifications?error=Connect+Supabase+before+extending+a+deadline.");
+  if (!isSupabaseConfigured()) redirect(destination + "?error=Connect+Supabase+before+extending+a+deadline.");
   const supabase = await createServerClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/");
-  if (!Number.isFinite(deadlineAt.getTime()) || deadlineAt.getTime() <= Date.now()) redirect("/notifications?error=Choose+a+future+deadline.");
+  if (!Number.isFinite(deadlineAt.getTime()) || deadlineAt.getTime() <= Date.now()) redirect(destination + "?error=Choose+a+future+deadline.");
   const { error } = await supabase.rpc("extend_gig_deadline", { target_gig: gigId, new_deadline: deadlineAt.toISOString() });
-  if (error) redirect("/notifications?error=This+gig+can’t+be+extended.+Its+deadline+may+have+passed+or+a+contributor+may+already+be+accepted.");
-  redirect("/notifications?message=Gig+deadline+extended.");
+  if (error) redirect(destination + "?error=This+gig+can%E2%80%99t+be+extended.+Its+deadline+may+have+passed+or+a+contributor+may+already+be+accepted.");
+  redirect(destination + "?message=Gig+deadline+extended.");
+}
+
+export async function closeGig(formData: FormData) {
+  const gigId = clean(formData.get("gigId"));
+  const returnTo = clean(formData.get("returnTo"));
+  const destination = returnTo === "/my-opportunities" ? returnTo : /^[0-9a-f-]{36}$/i.test(gigId) ? "/my-opportunities/" + gigId : "/my-opportunities";
+  if (!isSupabaseConfigured()) redirect(destination + "?error=Connect+Supabase+before+closing+an+opportunity.");
+  const supabase = await createServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/");
+  const { error } = await supabase.rpc("close_gig", { target_gig: gigId });
+  if (error) redirect(destination + "?error=This+opportunity+couldn%E2%80%99t+be+closed.");
+  redirect(destination + "?message=Opportunity+closed.+Applicants+were+notified.");
 }
 
 export async function requestPasswordReset(formData: FormData) {
   const identifier = clean(formData.get("identifier")).toLowerCase();
-  if (!identifier) redirect("/?authMode=forgot&error=Enter+your+email+or+username.");
-  if (!isSupabaseConfigured()) redirect("/?authMode=forgot&error=Supabase+is+not+connected+yet.");
+  if (!identifier) redirect("/forgot-password?error=Enter+your+email+or+username.");
+  if (!isSupabaseConfigured()) redirect("/forgot-password?error=Password+reset+is+temporarily+unavailable.+Try+again+later.");
 
   let email: string | null = null;
   let lookupFailed = false;
@@ -260,15 +275,15 @@ export async function requestPasswordReset(formData: FormData) {
   } catch {
     lookupFailed = true;
   }
-  if (lookupFailed) redirect("/?authMode=forgot&error=We+couldn%E2%80%99t+check+that+account.+Try+again.");
-  if (!email) redirect("/?authMode=forgot&error=No+account+exists+for+that+email+or+username.");
+  if (lookupFailed) redirect("/forgot-password?error=Password+reset+is+temporarily+unavailable.+Try+again+later.");
+  if (!email) redirect("/forgot-password?message=If+an+account+matches+that+email+or+username%2C+we%E2%80%99ve+sent+a+reset+link.+Check+your+inbox+and+spam+folder.");
 
   const supabase = await createServerClient();
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"}/auth/callback?next=/reset-password`,
   });
-  if (error) redirect("/?authMode=forgot&error=We+couldn%E2%80%99t+send+a+reset+email.+Try+again+later.");
-  redirect("/?authMode=forgot&message=We%E2%80%99ve+sent+a+password+reset+link+to+the+email+on+your+account.");
+  if (error) redirect("/forgot-password?error=We+couldn%E2%80%99t+send+a+reset+email.+Try+again+later.");
+  redirect("/forgot-password?message=If+an+account+matches+that+email+or+username%2C+we%E2%80%99ve+sent+a+reset+link.+Check+your+inbox+and+spam+folder.");
 }
 
 export async function updatePassword(formData: FormData) {
@@ -430,14 +445,16 @@ export async function createProposal(formData: FormData) {
   const supabase = await createServerClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/");
-  if (!/^[0-9a-f-]{36}$/i.test(recipientId) || !["collaboration", "hiring"].includes(kind) || !topic || !body) redirect("/proposals?error=Complete+the+proposal+details.");
+  if (!/^[0-9a-f-]{36}$/i.test(recipientId)) redirect("/proposals?error=Choose+a+musician+before+sending+a+proposal.");
+  const composePath = `/proposals/new?to=${encodeURIComponent(recipientId)}`;
+  if (!["collaboration", "hiring"].includes(kind) || !topic || topic.length > 150 || !body || body.length > 10000) redirect(`${composePath}&error=Complete+the+required+fields+and+keep+the+topic+under+150+characters.`);
   const { data, error } = await supabase.rpc("create_proposal", {
     target_recipient: recipientId,
     proposal_kind: kind,
     proposal_topic: topic,
     opening_message: body,
   });
-  if (error || !data) redirect("/proposals?error=We+couldn%E2%80%99t+send+that+proposal.");
+  if (error || !data) redirect(`${composePath}&error=We+couldn%E2%80%99t+send+that+proposal.+Review+the+details+and+try+again.`);
   redirect(`/proposals/${data}`);
 }
 

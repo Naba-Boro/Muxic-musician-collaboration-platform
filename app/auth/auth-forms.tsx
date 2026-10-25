@@ -60,7 +60,7 @@ export function AuthExperience({ initialMode, error, message }: {
             <div className="auth-field-label"><label htmlFor="password">PASSWORD</label><span>KEY // AUTH</span></div>
             <div className="auth-input-wrap"><input id="password" name="password" type={showPassword ? "text" : "password"} autoComplete="current-password" placeholder="Enter your password" required /><button className="auth-input-icon auth-input-toggle" type="button" aria-label={showPassword ? "Hide password" : "Show password"} aria-pressed={showPassword} onClick={() => setShowPassword((value) => !value)}><EyeIcon hidden={showPassword} /></button></div>
           </div>
-          <button type="button" className="auth-forgot-link" onClick={() => setMode("forgot")}>Forgot your password?</button>
+          <Link className="auth-forgot-link" href="/forgot-password">Forgot your password?</Link>
           <button className="auth-submit" type="submit">Sign in <span aria-hidden="true">→</span></button>
           <div className="auth-card-signup"><span>NEW TO MUXICS?</span><Link href="/signup">Create your musician profile <span aria-hidden="true">↗</span></Link></div>
         </form>}
@@ -96,5 +96,30 @@ export function PasswordResetForm({ error }: { error?: string }) {
     </div>
     <button className="auth-submit" type="submit">Update password <span aria-hidden="true">→</span></button>
     <Link className="auth-back-button" href="/">← Back to sign in</Link>
+  </form>;
+}
+
+export function RecoveryRequestForm({ error, message }: { error?: string; message?: string }) {
+  const [showConfirmation, setShowConfirmation] = useState(Boolean(message));
+
+  if (showConfirmation) {
+    return <div className="recovery-dispatched" role="status">
+      <div className="recovery-dispatched-icon" aria-hidden="true">✓</div>
+      <div><div className="recovery-state-label">TRANSMISSION DISPATCHED <span>PRIVATE</span></div>
+        <p>If an account matches that email or username, we’ve sent a reset link to its registered email. Check your inbox and spam folder.</p>
+        <div className="recovery-dispatched-bottom"><span>Reset links expire for security.</span><button type="button" onClick={() => setShowConfirmation(false)}>Send another link</button></div>
+      </div>
+    </div>;
+  }
+
+  return <form className="auth-console-form recovery-request-form" action={requestPasswordReset}>
+    {error && <p className="auth-alert" role="alert"><span className="auth-alert-icon" aria-hidden="true">!</span><span><strong>Could not send the link</strong><br />{error}</span></p>}
+    <div className="recovery-card-heading"><span className="auth-field-code">RECOVERY CREDENTIAL <span>CH—01</span></span><p>Enter the email or username on your account. We’ll send password reset instructions if it matches.</p></div>
+    <div className="auth-field">
+      <div className="auth-field-label"><label htmlFor="recovery-identifier">VERIFIED USERNAME OR EMAIL</label></div>
+      <div className="auth-input-wrap"><input id="recovery-identifier" name="identifier" type="text" autoComplete="username" placeholder="you@example.com or username" required /><span className="auth-input-icon"><PersonIcon /></span></div>
+      <div className="recovery-format"><span>Format: @handle or email</span><span>PRIVATE LOOKUP</span></div>
+    </div>
+    <button className="auth-submit" type="submit">Send reset link <span aria-hidden="true">➤</span></button>
   </form>;
 }
