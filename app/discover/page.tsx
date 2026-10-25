@@ -11,18 +11,24 @@ export default async function DiscoverPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/");
-  const { data } = await supabase.from("profiles").select("id,username,display_name,main_specialty,secondary_specialties,city,state,country,genres,avatar_doodle").neq("id", user.id).eq("onboarding_completed", true).order("created_at", { ascending: false }).limit(100);
-  const musicians: Musician[] = (data ?? []).map((profile) => ({
-    id: profile.id,
-    username: profile.username,
-    name: profile.display_name,
-    mainSpecialty: profile.main_specialty,
-    specialties: profile.secondary_specialties ?? [],
-    city: profile.city,
-    state: profile.state,
-    country: profile.country,
-    genres: profile.genres ?? [],
-    doodle: profile.avatar_doodle,
+  const { data } = await supabase.from("profiles").select("id,username,display_name,main_specialty,secondary_specialties,city,state,country,genres,avatar_doodle,avatar_path").neq("id", user.id).eq("onboarding_completed", true).order("created_at", { ascending: false }).limit(100);
+  const musicians: Musician[] = await Promise.all((data ?? []).map(async (profile) => {
+    const { data: signedAvatar } = profile.avatar_path
+      ? await supabase.storage.from("avatars").createSignedUrl(profile.avatar_path, 600)
+      : { data: null };
+    return {
+      id: profile.id,
+      username: profile.username,
+      name: profile.display_name,
+      mainSpecialty: profile.main_specialty,
+      specialties: profile.secondary_specialties ?? [],
+      city: profile.city,
+      state: profile.state,
+      country: profile.country,
+      genres: profile.genres ?? [],
+      doodle: profile.avatar_doodle,
+      avatarUrl: signedAvatar?.signedUrl ?? null,
+    };
   }));
   return <main className="opportunities-shell"><header className="app-header"><Link className="brand" href="/opportunities"><span className="brand-icon" aria-hidden="true">♫</span><span>Muxics<span className="brand-dot">.</span></span></Link><nav className="app-nav" aria-label="Main navigation"><Link href="/opportunities">Opportunities</Link><Link href="/discover" aria-current="page">Discover people</Link><Link href="/applications">Applications</Link><Link href="/proposals">Proposals</Link><Link href="/projects">Projects</Link></nav><Link className="app-user-dot" href="/settings/profile" aria-label="Profile settings">♫</Link></header><section className="feed-wrap"><div className="feed-heading"><div><span className="eyebrow">GOOD PEOPLE MAKE GOOD MUSIC</span><h1>Find your sound.</h1><p>Meet musicians by specialty and location, or take a chance on someone new.</p></div><Link className="create-gig" href="/settings/profile">Your profile <span>↗</span></Link></div><PeopleDiscovery musicians={musicians} /></section></main>;
 }

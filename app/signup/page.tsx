@@ -1,80 +1,80 @@
 import Link from "next/link";
 import { signUp } from "../actions";
+import { AudioDemoInput } from "./audio-demo-input";
+import { ProfileAvatarInput, SignupProfileFields } from "./signup-profile-fields";
 
 export const instant = false;
-import { AudioDemoInput } from "./audio-demo-input";
 
 type SignupPageProps = { searchParams: Promise<{ error?: string }> };
 
-const specialtyOptions = [
-  "Vocalist / singer", "Instrumentalist", "Songwriter", "Lyricist", "Composer", "Music producer",
-  "Sound engineer", "Mixing engineer", "Mastering engineer", "Arranger", "Beatmaker", "DJ", "Other",
-];
-const genreOptions = ["Pop", "Rock", "Indie", "Hip-hop", "Electronic", "Classical", "Jazz", "Folk", "Film music", "Other"];
+function NoteMark() {
+  return <span className="signup-note-mark" aria-hidden="true"><i /><i /><i /><i /><i /></span>;
+}
 
 export default async function SignupPage({ searchParams }: SignupPageProps) {
   const { error } = await searchParams;
   return (
-    <main className="signup-layout">
-      <header className="signup-header">
-        <Link className="brand" href="/"><span className="brand-icon" aria-hidden="true">♫</span><span>Muxics<span className="brand-dot">.</span></span></Link>
-        <span>Already have an account? <Link className="small-link" href="/">Sign in</Link></span>
+    <main className="signup-page">
+      <header className="signup-topbar">
+        <Link className="signup-brand" href="/" aria-label="Muxics home"><span className="signup-brand-icon"><NoteMark /></span><span>Muxics<span className="brand-dot">.</span></span></Link>
+        <div className="signup-topbar-label"><i /> MUSICIAN PROFILE <span>//</span> REGISTRATION</div>
+        <div className="signup-topbar-account"><span>Already a member?</span><Link href="/">Sign in <span aria-hidden="true">→</span></Link></div>
       </header>
-      <section className="signup-content">
-        <div className="signup-intro">
-          <span className="eyebrow">YOUR FIRST STEP</span>
-          <h1>Let’s meet the<br /><em>music you.</em></h1>
-          <p>Set up the essentials. You can add more work and details to your profile later.</p>
-        </div>
-        {error && <p className="notice notice-error" role="alert">{error}</p>}
-        <form className="signup-form" action={signUp} encType="multipart/form-data">
-          <div className="form-section-heading"><span>01</span><h2>Your account</h2></div>
-          <div className="form-grid">
-            <div className="field"><label htmlFor="fullName">Name</label><input id="fullName" name="fullName" autoComplete="name" required /></div>
-            <div className="field"><label htmlFor="username">Username</label><input id="username" name="username" autoComplete="username" minLength={3} maxLength={24} pattern="[A-Za-z0-9_]+" placeholder="e.g. riya_sings" required /><span className="field-hint">3–24 letters, numbers, or underscores</span></div>
-            <div className="field"><label htmlFor="email">Email</label><input id="email" name="email" type="email" autoComplete="email" required /></div>
-            <div className="field"><label htmlFor="password">Password</label><input id="password" name="password" type="password" autoComplete="new-password" minLength={8} required /><span className="field-hint">At least 8 characters</span></div>
-          </div>
 
-          <div className="form-section-heading"><span>02</span><h2>Where you’re based</h2></div>
-          <div className="form-grid location-grid">
-            <div className="field"><label htmlFor="city">City</label><input id="city" name="city" autoComplete="address-level2" required /></div>
-            <div className="field"><label htmlFor="state">State</label><input id="state" name="state" autoComplete="address-level1" required /></div>
-            <div className="field"><label htmlFor="country">Country</label><input id="country" name="country" defaultValue="India" autoComplete="country-name" required /></div>
-          </div>
+      <div className="signup-mobile-progress"><span><i /> CREATE YOUR MUSICIAN PROFILE</span><span>INDIA</span></div>
 
-          <div className="form-section-heading"><span>03</span><h2>Your sound and skills</h2></div>
-          <div className="field">
-            <label htmlFor="mainSpecialty">Main specialty</label>
-            <select id="mainSpecialty" name="mainSpecialty" required defaultValue="">
-              <option value="" disabled>Choose your main specialty</option>
-              {specialtyOptions.map((item) => <option key={item} value={item}>{item}</option>)}
-            </select>
-            <input className="other-entry" name="mainSpecialtyOther" aria-label="Type your main specialty if you chose Other" placeholder="If you chose Other, tell us what you do" />
-          </div>
-          <div className="field">
-            <label htmlFor="secondarySpecialties">Secondary specialties <span className="optional">optional · up to 6</span></label>
-            <input id="secondarySpecialties" name="secondarySpecialties" placeholder="Separate with commas, e.g. songwriter, producer" />
-          </div>
-          <div className="field">
-            <label htmlFor="genres">Genres you’re interested in</label>
-            <select id="genres" name="genres" required defaultValue="">
-              <option value="" disabled>Choose your primary genre</option>
-              {genreOptions.map((item) => <option key={item} value={item}>{item}</option>)}
-            </select>
-            <input className="other-entry" name="genreOther" aria-label="Type your genre if you chose Other" placeholder="If you chose Other, tell us the genre" />
-            <span className="field-hint">You can add more genres in profile settings later.</span>
-          </div>
+      <div className="signup-main">
+        <aside className="signup-story">
+          <span className="signup-kicker"><i /> MADE FOR INDEPENDENT MUSICIANS</span>
+          <h1>Join Muxics.<br /><em>Make music together.</em></h1>
+          <p>Meet musicians for real projects, focused collaborations, and paid opportunities across India.</p>
 
-          <div className="form-section-heading"><span>04</span><h2>Let them hear you</h2></div>
-          <p className="section-description">Upload one short demo so other musicians can get a feel for your work. You can add a second one later.</p>
-          <AudioDemoInput />
+          <section className="signup-profile-preview" aria-label="What your Muxics profile will include">
+            <div className="signup-preview-head"><span><i /> YOUR MUSICIAN PROFILE</span><span>PUBLIC</span></div>
+            <div className="signup-preview-person"><div className="signup-preview-avatar"><NoteMark /></div><div><strong>Your name, your sound</strong><span>Main specialty · Location</span></div></div>
+            <div className="signup-preview-tags"><span>Skills</span><span>Genres</span><span>One demo</span></div>
+            <p>Your profile helps other musicians discover your work and decide whether you’re a fit for their project.</p>
+          </section>
 
-          <label className="checkbox-row"><input type="checkbox" name="ageConfirmed" required /><span>I confirm I’m 18 or older.</span></label>
-          <button className="button button-primary signup-submit" type="submit">Create my account <span aria-hidden="true">→</span></button>
-          <p className="auth-legal">We’ll email you a verification link before you can sign in.</p>
-        </form>
-      </section>
+          <div className="signup-story-foot"><span><i /> ONE PROFILE. MANY WAYS TO COLLABORATE.</span><span>INDIA · IST</span></div>
+        </aside>
+
+        <section className="signup-form-column" aria-label="Create a Muxics account">
+          <div className="signup-form-heading"><span className="signup-kicker"><i /> SET UP YOUR PUBLIC PROFILE</span><h2>Join Muxics</h2><p>Start with the details musicians need to find and work with you.</p></div>
+          {error && <p className="notice notice-error" role="alert">{error}</p>}
+          <form className="signup-form" action={signUp}>
+            <div className="signup-section-title"><span>01</span><div><h3>Credentials & identity</h3><p>Used to create and access your account.</p></div><small>REQUIRED</small></div>
+            <ProfileAvatarInput />
+            <div className="signup-form-grid">
+              <div className="signup-field"><label htmlFor="fullName">FULL NAME</label><input id="fullName" name="fullName" autoComplete="name" placeholder="Your name" maxLength={100} required /></div>
+              <div className="signup-field"><label htmlFor="username">USERNAME</label><div className="signup-handle-input"><span>@</span><input id="username" name="username" autoComplete="username" minLength={3} maxLength={24} pattern="[A-Za-z0-9_]+" placeholder="your_handle" required /></div><small>3–24 letters, numbers, or underscores</small></div>
+              <div className="signup-field"><label htmlFor="email">EMAIL ADDRESS</label><input id="email" name="email" type="email" autoComplete="email" placeholder="you@example.com" required /></div>
+              <div className="signup-field"><label htmlFor="password">PASSWORD <small>8+ CHARACTERS</small></label><input id="password" name="password" type="password" autoComplete="new-password" minLength={8} placeholder="Create a password" required /></div>
+            </div>
+
+            <SignupProfileFields />
+
+            <div className="signup-section-title"><span>05</span><div><h3>Studio location</h3><p>Help musicians find collaborators nearby.</p></div><small>REQUIRED</small></div>
+            <div className="signup-form-grid signup-location-grid">
+              <div className="signup-field"><label htmlFor="city">CITY</label><input id="city" name="city" autoComplete="address-level2" placeholder="Your city" maxLength={100} required /></div>
+              <div className="signup-field"><label htmlFor="state">STATE / REGION</label><input id="state" name="state" autoComplete="address-level1" placeholder="Your state" maxLength={100} required /></div>
+              <div className="signup-field"><label htmlFor="country">COUNTRY</label><input id="country" name="country" defaultValue="India" autoComplete="country-name" maxLength={100} required /></div>
+            </div>
+
+            <div className="signup-section-title"><span>06</span><div><h3>A little about you</h3><p>Give potential collaborators useful context.</p></div><small>OPTIONAL</small></div>
+            <div className="signup-field signup-bio-field"><label htmlFor="bio">MUSICIAN BIO</label><textarea id="bio" name="bio" rows={4} maxLength={1200} placeholder="What do you make, and what kind of projects are you looking for?" /><small>Up to 1,200 characters</small></div>
+
+            <div className="signup-section-title"><span>07</span><div><h3>Audio demo</h3><p>Give other musicians a quick listen to your work.</p></div><small>REQUIRED · 1 MIN MAX</small></div>
+            <AudioDemoInput />
+            <p className="signup-demo-privacy">Your demo will be playable from your public profile. Upload only work you have the right to share.</p>
+
+            <label className="signup-consent"><input type="checkbox" name="ageConfirmed" required /><span>I confirm I’m 18 or older and have the right to share the audio demo I uploaded.</span></label>
+            <button className="signup-create-button" type="submit">Create my account <span aria-hidden="true">→</span></button>
+            <p className="signup-email-note">We’ll email you a verification link before you can sign in.</p>
+          </form>
+        </section>
+      </div>
+      <footer className="signup-footer"><span><b>MUXICS</b> MUSICIAN COLLABORATION</span><span>Independent musicians, connected across India.</span><span>YOUR MUSIC. YOUR PEOPLE. <i>♫</i></span></footer>
     </main>
   );
 }

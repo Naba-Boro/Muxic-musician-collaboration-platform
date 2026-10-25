@@ -62,11 +62,17 @@ export async function signUp(formData: FormData) {
   const country = clean(formData.get("country"));
   const specialtyChoice = clean(formData.get("mainSpecialty"));
   const mainSpecialty = specialtyChoice === "Other" ? clean(formData.get("mainSpecialtyOther")) : specialtyChoice;
-  const genreChoice = clean(formData.get("genres"));
-  const genres = [genreChoice === "Other" ? clean(formData.get("genreOther")) : genreChoice].filter(Boolean);
-  const secondarySpecialties = clean(formData.get("secondarySpecialties")).split(",").map((item) => item.trim()).filter(Boolean);
+  const genreChoices = formData.getAll("genre").map((item) => clean(item)).filter(Boolean);
+  const genres = [...new Set(genreChoices.map((item) => item === "Other" ? clean(formData.get("genreOther")) : item).filter(Boolean))];
+  const selectedSecondarySpecialties = formData.getAll("secondarySpecialty").map((item) => clean(item)).filter(Boolean);
+  const additionalSpecialty = clean(formData.get("secondarySpecialtiesOther"));
+  const secondarySpecialties = [...new Set(selectedSecondarySpecialties.map((item) => item === "Other" ? additionalSpecialty : item).filter(Boolean))];
+  const additionalGenre = clean(formData.get("genreOther"));
   const password = clean(formData.get("password"));
   const demo = formData.get("demo");
+  const avatarValue = formData.get("avatar");
+  const avatar = avatarValue instanceof File && avatarValue.size > 0 ? avatarValue : null;
+  const bio = clean(formData.get("bio"));
   const durationSeconds = Number(clean(formData.get("demoDuration")));
   const isAdult = formData.get("ageConfirmed") === "on";
 
@@ -79,12 +85,24 @@ export async function signUp(formData: FormData) {
   if (secondarySpecialties.length > 6 || new Set(secondarySpecialties).size !== secondarySpecialties.length) {
     redirect("/signup?error=Choose+up+to+6+different+secondary+specialties.");
   }
+  if ((selectedSecondarySpecialties.includes("Other") && !additionalSpecialty) || (genreChoices.includes("Other") && !additionalGenre) || additionalSpecialty.length > 80 || additionalGenre.length > 80) {
+    redirect("/signup?error=Complete+your+custom+specialty+or+genre.");
+  }
+  const allowedSpecialties = new Set(["Vocalist / singer", "Instrumentalist", "Songwriter", "Lyricist", "Composer", "Music producer", "Sound engineer", "Mixing engineer", "Mastering engineer", "Arranger", "Beatmaker", "DJ", "Other"]);
+  const allowedGenres = new Set(["Pop", "Rock", "Indie", "Hip-hop", "Electronic", "Classical", "Jazz", "Folk", "Film music", "Other"]);
+  if (!allowedSpecialties.has(specialtyChoice) || selectedSecondarySpecialties.some((item) => !allowedSpecialties.has(item)) || genreChoices.some((item) => !allowedGenres.has(item))) {
+    redirect("/signup?error=Choose+your+specialties+and+genres+from+the+available+options.");
+  }
+  if (bio.length > 1200) redirect("/signup?error=Keep+your+musician+bio+under+1%2C200+characters.");
   const allowedTypes = new Set(["audio/mpeg", "audio/mp4", "audio/x-m4a"]);
   if (!allowedTypes.has(demo.type) || demo.size > 15 * 1024 * 1024) {
     redirect("/signup?error=Upload+an+MP3+or+M4A+demo+up+to+15+MB.");
   }
   if (!Number.isFinite(durationSeconds) || durationSeconds <= 0 || durationSeconds > 60) {
     redirect("/signup?error=Your+demo+must+be+60+seconds+or+less.");
+  }
+  if (avatar && (!["image/jpeg", "image/png", "image/webp"].includes(avatar.type) || avatar.size > 256 * 1024)) {
+    redirect("/signup?error=Upload+a+JPG%2C+PNG%2C+or+WebP+profile+photo+up+to+256+KB.");
   }
 
   let admin: ReturnType<typeof adminClient>;
@@ -110,6 +128,7 @@ export async function signUp(formData: FormData) {
 
   const extension = demo.type === "audio/mpeg" ? "mp3" : "m4a";
   const objectPath = `${userId}/${crypto.randomUUID()}.${extension}`;
+  const avatarPath = avatar ? `${userId}/${crypto.randomUUID()}.${avatar.type === "image/png" ? "png" : avatar.type === "image/webp" ? "webp" : "jpg"}` : null;
   const { error: uploadError } = await admin.storage.from("demos").upload(objectPath, demo, {
     contentType: demo.type,
     upsert: false,
@@ -117,6 +136,17 @@ export async function signUp(formData: FormData) {
   if (uploadError) {
     await admin.auth.admin.deleteUser(userId);
     redirect("/signup?error=We+couldn%E2%80%99t+save+that+demo.+Please+try+again.");
+  }
+  if (avatar && avatarPath) {
+    const { error: avatarUploadError } = await admin.storage.from("avatars").upload(avatarPath, avatar, {
+      contentType: avatar.type,
+      upsert: false,
+    });
+    if (avatarUploadError) {
+      await admin.storage.from("demos").remove([objectPath]);
+      await admin.auth.admin.deleteUser(userId);
+      redirect("/signup?error=We+couldn%E2%80%99t+save+your+profile+photo.+Please+try+again.");
+    }
   }
 
   const { error: profileError } = await admin.from("profiles").insert({
@@ -130,11 +160,14 @@ export async function signUp(formData: FormData) {
     main_specialty: mainSpecialty,
     secondary_specialties: secondarySpecialties,
     genres,
+    bio,
+    avatar_path: avatarPath,
     avatar_doodle: ["note-1", "note-2", "note-3", "note-4"][crypto.getRandomValues(new Uint32Array(1))[0] % 4],
     onboarding_completed: true,
   });
   if (profileError) {
     await admin.storage.from("demos").remove([objectPath]);
+    if (avatarPath) await admin.storage.from("avatars").remove([avatarPath]);
     await admin.auth.admin.deleteUser(userId);
     const message = profileError.code === "23505" ? "That+username+is+already+taken." : "We+couldn%E2%80%99t+save+your+profile.+Please+try+again.";
     redirect(`/signup?error=${message}`);
@@ -151,6 +184,7 @@ export async function signUp(formData: FormData) {
   if (demoError) {
     await admin.from("profiles").delete().eq("id", userId);
     await admin.storage.from("demos").remove([objectPath]);
+    if (avatarPath) await admin.storage.from("avatars").remove([avatarPath]);
     await admin.auth.admin.deleteUser(userId);
     redirect("/signup?error=We+couldn%E2%80%99t+save+your+demo.+Please+try+again.");
   }
@@ -164,6 +198,7 @@ export async function signUp(formData: FormData) {
     await admin.from("demos").delete().eq("user_id", userId);
     await admin.from("profiles").delete().eq("id", userId);
     await admin.storage.from("demos").remove([objectPath]);
+    if (avatarPath) await admin.storage.from("avatars").remove([avatarPath]);
     await admin.auth.admin.deleteUser(userId);
     redirect("/signup?error=That+username+is+already+taken.");
   }
@@ -208,20 +243,39 @@ export async function extendGigDeadline(formData: FormData) {
 }
 
 export async function requestPasswordReset(formData: FormData) {
-  const email = clean(formData.get("email")).toLowerCase();
-  if (!email) redirect("/forgot-password?error=Enter+the+email+address+for+your+account.");
-  if (!isSupabaseConfigured()) redirect("/forgot-password?error=Supabase+is+not+connected+yet.");
+  const identifier = clean(formData.get("identifier")).toLowerCase();
+  if (!identifier) redirect("/?authMode=forgot&error=Enter+your+email+or+username.");
+  if (!isSupabaseConfigured()) redirect("/?authMode=forgot&error=Supabase+is+not+connected+yet.");
+
+  let email: string | null = null;
+  let lookupFailed = false;
+  try {
+    const admin = adminClient();
+    const lookup = admin.from("login_aliases").select("email");
+    const { data, error: lookupError } = identifier.includes("@")
+      ? await lookup.eq("email", identifier).maybeSingle()
+      : await lookup.eq("normalized_username", identifier).maybeSingle();
+    lookupFailed = Boolean(lookupError);
+    email = data?.email ?? null;
+  } catch {
+    lookupFailed = true;
+  }
+  if (lookupFailed) redirect("/?authMode=forgot&error=We+couldn%E2%80%99t+check+that+account.+Try+again.");
+  if (!email) redirect("/?authMode=forgot&error=No+account+exists+for+that+email+or+username.");
+
   const supabase = await createServerClient();
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"}/auth/callback?next=/reset-password`,
   });
-  if (error) redirect("/forgot-password?error=We+couldn%E2%80%99t+send+a+reset+email.+Try+again+later.");
-  redirect("/forgot-password?message=If+an+account+uses+that+email%2C+a+reset+link+is+on+its+way.");
+  if (error) redirect("/?authMode=forgot&error=We+couldn%E2%80%99t+send+a+reset+email.+Try+again+later.");
+  redirect("/?authMode=forgot&message=We%E2%80%99ve+sent+a+password+reset+link+to+the+email+on+your+account.");
 }
 
 export async function updatePassword(formData: FormData) {
   const password = clean(formData.get("password"));
+  const confirmation = clean(formData.get("confirmPassword"));
   if (password.length < 8) redirect("/reset-password?error=Use+at+least+8+characters.");
+  if (password !== confirmation) redirect("/reset-password?error=The+passwords+don%E2%80%99t+match.+Check+both+fields+and+try+again.");
   const supabase = await createServerClient();
   const { error } = await supabase.auth.updateUser({ password });
   if (error) redirect("/reset-password?error=Your+reset+link+may+have+expired.+Request+a+new+one.");
