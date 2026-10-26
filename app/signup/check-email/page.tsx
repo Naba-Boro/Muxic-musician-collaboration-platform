@@ -1,6 +1,9 @@
 import Link from "next/link";
 
-export default function CheckEmailPage() {
+type Props = { searchParams: Promise<{ error?: string }> };
+
+export default async function CheckEmailPage({ searchParams }: Props) {
+  const { error } = await searchParams;
   return (
     <main className="signup-confirmation-page">
       <Link className="signup-brand" href="/" aria-label="Muxics home">
@@ -13,6 +16,8 @@ export default function CheckEmailPage() {
         <span className="signup-kicker"><i /> ACCOUNT CREATED</span>
         <h1 id="check-email-title">You’re almost in.</h1>
         <p className="signup-confirmation-lead">Please verify your email to activate your Muxics account.</p>
+
+        {error && <p className="notice notice-error" role="alert">{error}</p>}
 
         <div className="signup-confirmation-instructions">
           <strong>Check your inbox for the verification link.</strong>

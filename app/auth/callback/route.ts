@@ -5,9 +5,9 @@ export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
   const requestedNext = searchParams.get("next") ?? "/opportunities";
-  const flow = searchParams.get("flow");
   const next = requestedNext.startsWith("/") && !requestedNext.startsWith("//") ? requestedNext : "/opportunities";
-  const isSignupConfirmation = flow === "signup" || (!flow && next !== "/reset-password");
+  // Compatibility for email links sent before signup and recovery had separate callback routes.
+  const isSignupConfirmation = next !== "/reset-password";
   if (code) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);

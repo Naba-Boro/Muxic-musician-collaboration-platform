@@ -131,7 +131,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .recovery-steps .is-current { border: 1px solid #d3e1db; border-radius: 3px; background: white; color: #086f66; }
 .recovery-steps .is-current i { border-color: #0a9488; background: #e2f5ef; }
 .recovery-step-line { width: 18px; height: 1px; background: #cbd5ce; }
-.recovery-workspace { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(265px, .85fr); align-items: start; gap: 24px; }
+.recovery-workspace { display: block; width: min(100%, 820px); margin-inline: auto; }
 .recovery-form-panel, .recovery-help-card { overflow: hidden; border: 1px solid #dce4de; border-radius: 8px; background: #fff; box-shadow: 0 5px 14px #20372c0b; }
 .recovery-panel-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 11px 15px; background: #2c302e; color: #9be5d7; font: 12px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 1px; }
 .recovery-panel-top > span:first-child { display: flex; align-items: center; gap: 7px; }
@@ -197,8 +197,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .recovery-intro .auth-kicker { font-size: 14px; }
   .recovery-intro h1, .reset-main .recovery-intro h1 { margin: 10px 0 8px; font-size: 33px; letter-spacing: -1.2px; }
   .recovery-intro > p { font-size: 14px; line-height: 1.55; }
-  .recovery-steps { display: flex; width: 100%; justify-content: center; margin-top: 19px; }
-  .recovery-steps > span, .recovery-steps > a { flex: 1; justify-content: center; font-size: 14px; }
+  .reset-main .recovery-steps { display: flex; width: 100%; justify-content: center; margin-top: 19px; }
+  .reset-main .recovery-steps > span, .reset-main .recovery-steps > a { flex: 1; justify-content: center; font-size: 14px; }
   .recovery-workspace, .reset-workspace { display: block; }
   .recovery-form-panel, .reset-form-panel { border-color: #38423d; background: #2c302e; color: #f2f4ef; }
   .recovery-panel-top { padding: 12px 14px; }
@@ -218,7 +218,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .recovery-request-form .auth-submit { width: 100%; min-height: 49px; }
   .recovery-privacy { border-color: #46514a; background: #353a36; color: #bdc8c0; }
   .recovery-privacy b { color: #e6ece5; }
-  .recovery-aside, .reset-aside { margin-top: 13px; }
+  .reset-aside { margin-top: 13px; }
   .recovery-help-card { padding: 14px; }
   .recovery-dispatched { border-color: #597168; background: #f1f4ef; }
   .reset-form-intro { margin-bottom: 18px; }

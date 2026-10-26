@@ -23,9 +23,6 @@ export default async function ForgotPasswordPage({ searchParams }: Props) {
         <span className="auth-kicker">CREDENTIAL ACCESS <span>·</span> ACCOUNT RECOVERY</span>
         <h1>Account<br className="recovery-desktop-break" /> recovery</h1>
         <p>Restore access to your Muxics account and get back to finding your next collaborator.</p>
-        <div className="recovery-steps" aria-label="Password recovery steps">
-          <span className="is-current"><i>1</i> Request link</span><span className="recovery-step-line" /><Link href="/reset-password"><i>2</i> Set password</Link>
-        </div>
       </section>
 
       <section className="recovery-workspace" aria-label="Request a password reset">
@@ -39,11 +36,6 @@ export default async function ForgotPasswordPage({ searchParams }: Props) {
           </div>
         </div>
 
-        <aside className="recovery-aside">
-          <section className="recovery-help-card"><div className="recovery-aside-icon" aria-hidden="true">?</div><div><h2>Already opened your reset email?</h2><p>Use the secure link in that email to choose a new password.</p><Link href="/reset-password">Set a new password <span aria-hidden="true">→</span></Link></div></section>
-          <section className="recovery-help-card"><div className="recovery-aside-icon" aria-hidden="true">⌂</div><div><h2>Need a hand?</h2><p>If you can’t access your account email, contact Muxics support for help.</p><Link href="mailto:support@muxics.in">Contact support <span aria-hidden="true">↗</span></Link></div></section>
-          <div className="recovery-security-note"><span aria-hidden="true">⌑</span><p><b>Account security</b><br />Only use a reset link you requested. Never share it with anyone.</p></div>
-        </aside>
       </section>
     </div>
 

@@ -126,7 +126,7 @@ export async function signUp(formData: FormData) {
     password,
     options: {
       data: { username, full_name: fullName },
-      emailRedirectTo: `${appSiteUrl()}/auth/callback?flow=signup&next=%2Fopportunities`,
+      emailRedirectTo: `${appSiteUrl()}/auth/confirm-signup`,
     },
   });
   const userId = signUpData.user?.id;
@@ -290,7 +290,7 @@ export async function requestPasswordReset(formData: FormData) {
 
   const supabase = await createServerClient();
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${appSiteUrl()}/auth/callback?flow=password-reset&next=%2Freset-password`,
+    redirectTo: `${appSiteUrl()}/auth/recovery`,
   });
   if (error) redirect("/forgot-password?error=We+couldn%E2%80%99t+send+a+reset+email.+Try+again+later.");
   redirect("/forgot-password?message=If+an+account+matches+that+email+or+username%2C+we%E2%80%99ve+sent+a+reset+link.+Check+your+inbox+and+spam+folder.");
@@ -302,8 +302,10 @@ export async function updatePassword(formData: FormData) {
   if (password.length < 8) redirect("/reset-password?error=Use+at+least+8+characters.");
   if (password !== confirmation) redirect("/reset-password?error=The+passwords+don%E2%80%99t+match.+Check+both+fields+and+try+again.");
   const supabase = await createServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/forgot-password?error=Your+reset+link+has+expired.+Request+a+new+one+and+open+it+on+this+device.");
   const { error } = await supabase.auth.updateUser({ password });
-  if (error) redirect("/reset-password?error=Your+reset+link+may+have+expired.+Request+a+new+one.");
+  if (error) redirect("/forgot-password?error=Your+reset+link+has+expired.+Request+a+new+one+and+open+it+on+this+device.");
   redirect("/?message=Your+password+has+been+updated.+Sign+in+to+continue.");
 }
 
