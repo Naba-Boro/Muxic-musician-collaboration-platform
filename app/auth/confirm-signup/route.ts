@@ -4,14 +4,30 @@ import { createClient } from "@/lib/supabase/server";
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
+  const tokenHash = searchParams.get("token_hash");
+  const tokenType = searchParams.get("type");
 
-  if (!code) {
+  // A stale recovery email template can point here. Forward it to the correct
+  // flow instead of trying to activate the account as a signup confirmation.
+  if (tokenType === "recovery") {
+    const recovery = new URL("/auth/recovery", origin);
+    if (code) recovery.searchParams.set("code", code);
+    if (tokenHash) recovery.searchParams.set("token_hash", tokenHash);
+    recovery.searchParams.set("type", "recovery");
+    return NextResponse.redirect(recovery);
+  }
+
+  if (!code && !tokenHash) {
     return NextResponse.redirect(new URL("/signup?error=This+verification+link+is+invalid+or+has+expired.+Try+signing+in+or+contact+support.", origin));
   }
 
   const supabase = await createClient();
-  const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
-  if (exchangeError) {
+  const { error: verificationError } = tokenHash
+    ? tokenType === "signup" || tokenType === "email"
+      ? await supabase.auth.verifyOtp({ token_hash: tokenHash, type: tokenType })
+      : { error: new Error("Unsupported verification link type") }
+    : await supabase.auth.exchangeCodeForSession(code!);
+  if (verificationError) {
     return NextResponse.redirect(new URL("/signup?error=This+verification+link+is+invalid+or+has+expired.+Try+signing+in+or+contact+support.", origin));
   }
 

@@ -90,7 +90,7 @@ export default async function NotificationsPage({ searchParams }: { searchParams
     projects: notifications.filter((item) => categoryOf(item) === "projects").length,
   };
   const filtered = notifications.filter((item) => filter === "unread" ? !item.read_at : filter === "all" ? true : categoryOf(item) === filter);
-  const gigIds = [...new Set(notifications.filter((item) => item.event_type === "gig_deadline_24h" && item.reference_id).map((item) => item.reference_id!))];
+  const gigIds = [...new Set(notifications.filter((item) => item.reference_type === "gig" && item.reference_id).map((item) => item.reference_id!))];
   const { data: ownedGigs } = gigIds.length ? await supabase.from("gigs").select("id,status").eq("poster_id", user.id).in("id", gigIds) : { data: [] };
   const ownedGigIds = new Set((ownedGigs ?? []).map((gig) => gig.id));
   const ownedGigById = new Map((ownedGigs ?? []).map((gig) => [gig.id, gig] as const));
