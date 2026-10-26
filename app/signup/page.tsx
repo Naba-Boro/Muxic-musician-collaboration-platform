@@ -5,14 +5,14 @@ import { ProfileAvatarInput, SignupProfileFields } from "./signup-profile-fields
 
 export const instant = false;
 
-type SignupPageProps = { searchParams: Promise<{ error?: string }> };
+type SignupPageProps = { searchParams: Promise<{ error?: string; message?: string }> };
 
 function NoteMark() {
   return <span className="signup-note-mark" aria-hidden="true"><i /><i /><i /><i /><i /></span>;
 }
 
 export default async function SignupPage({ searchParams }: SignupPageProps) {
-  const { error } = await searchParams;
+  const { error, message } = await searchParams;
   return (
     <main className="signup-page">
       <header className="signup-topbar">
@@ -42,6 +42,7 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
         <section className="signup-form-column" aria-label="Create a Muxics account">
           <div className="signup-form-heading"><span className="signup-kicker"><i /> SET UP YOUR PUBLIC PROFILE</span><h2>Join Muxics</h2><p>Start with the details musicians need to find and work with you.</p></div>
           {error && <p className="notice notice-error" role="alert">{error}</p>}
+          {message && <p className="notice notice-success" role="status">{message}</p>}
           <form className="signup-form" action={signUp}>
             <div className="signup-section-title"><span>01</span><div><h3>Credentials & identity</h3><p>Used to create and access your account.</p></div><small>REQUIRED</small></div>
             <ProfileAvatarInput />
@@ -70,7 +71,7 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
 
             <label className="signup-consent"><input type="checkbox" name="ageConfirmed" required /><span>I confirm I’m 18 or older and have the right to share the audio demo I uploaded.</span></label>
             <button className="signup-create-button" type="submit">Create my account <span aria-hidden="true">→</span></button>
-            <p className="signup-email-note">Your account will be ready to use as soon as it’s created.</p>
+            <p className="signup-email-note">We’ll email you a verification link. Your profile and demo are saved privately until you verify your email.</p>
           </form>
         </section>
       </div>

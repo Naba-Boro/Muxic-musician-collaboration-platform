@@ -9,7 +9,25 @@ export async function GET(request: NextRequest) {
   if (code) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) return NextResponse.redirect(new URL(next, origin));
+    if (!error) {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile, error: lookupError } = await supabase
+          .from("profiles")
+          .select("onboarding_completed")
+          .eq("id", user.id)
+          .maybeSingle();
+        if (lookupError) return NextResponse.redirect(new URL("/signup?error=Email+verified,+but+we+couldn%E2%80%99t+activate+your+profile.+Please+sign+in+or+contact+support.", origin));
+        if (profile && !profile.onboarding_completed) {
+          const { error: profileError } = await supabase
+            .from("profiles")
+            .update({ onboarding_completed: true })
+            .eq("id", user.id);
+          if (profileError) return NextResponse.redirect(new URL("/signup?error=Email+verified,+but+we+couldn%E2%80%99t+activate+your+profile.+Please+sign+in+or+contact+support.", origin));
+        }
+      }
+      return NextResponse.redirect(new URL(next, origin));
+    }
   }
   return NextResponse.redirect(new URL("/?error=That+sign-in+link+could+not+be+used.+Try+signing+in+or+request+a+new+link.", origin));
 }

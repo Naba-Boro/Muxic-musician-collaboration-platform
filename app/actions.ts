@@ -22,6 +22,14 @@ function genericAuthError() {
   return "We couldn’t sign you in with those details. Check them and try again.";
 }
 
+function appSiteUrl() {
+  const configuredUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  const fallbackUrl = process.env.NODE_ENV === "production"
+    ? "https://muxic-musician-collaboration-platform.onrender.com"
+    : "http://localhost:3000";
+  return (configuredUrl || fallbackUrl).replace(/\/+$/, "");
+}
+
 export async function signIn(formData: FormData) {
   if (!isSupabaseConfigured()) redirect("/?error=Supabase+is+not+connected+yet.+Set+up+the+project+credentials+in+.env.local.");
 
@@ -118,17 +126,13 @@ export async function signUp(formData: FormData) {
     password,
     options: {
       data: { username, full_name: fullName },
+      emailRedirectTo: `${appSiteUrl()}/auth/callback`,
     },
   });
   const userId = signUpData.user?.id;
   if (signUpError || !userId || !signUpData.user?.identities?.length) {
     redirect("/signup?error=We+couldn%E2%80%99t+create+your+account.+Check+your+details+or+try+signing+in.");
   }
-  if (!signUpData.session) {
-    await admin.auth.admin.deleteUser(userId);
-    redirect("/signup?error=Instant+signup+isn%E2%80%99t+enabled+yet.+Ask+the+app+owner+to+disable+Confirm+email+in+Supabase+Authentication+settings.");
-  }
-
   const extension = demo.type === "audio/mpeg" ? "mp3" : "m4a";
   const objectPath = `${userId}/${crypto.randomUUID()}.${extension}`;
   const avatarPath = avatar ? `${userId}/${crypto.randomUUID()}.${avatar.type === "image/png" ? "png" : avatar.type === "image/webp" ? "webp" : "jpg"}` : null;
@@ -166,7 +170,7 @@ export async function signUp(formData: FormData) {
     bio,
     avatar_path: avatarPath,
     avatar_doodle: ["note-1", "note-2", "note-3", "note-4"][crypto.getRandomValues(new Uint32Array(1))[0] % 4],
-    onboarding_completed: true,
+    onboarding_completed: Boolean(signUpData.session),
   });
   if (profileError) {
     await admin.storage.from("demos").remove([objectPath]);
@@ -206,6 +210,9 @@ export async function signUp(formData: FormData) {
     redirect("/signup?error=That+username+is+already+taken.");
   }
 
+  if (!signUpData.session) {
+    redirect("/signup?message=Account+created.+Check+your+email+and+click+the+verification+link+to+activate+your+profile.");
+  }
   redirect("/opportunities");
 }
 
@@ -283,7 +290,7 @@ export async function requestPasswordReset(formData: FormData) {
 
   const supabase = await createServerClient();
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"}/auth/callback?next=/reset-password`,
+    redirectTo: `${appSiteUrl()}/auth/callback?next=/reset-password`,
   });
   if (error) redirect("/forgot-password?error=We+couldn%E2%80%99t+send+a+reset+email.+Try+again+later.");
   redirect("/forgot-password?message=If+an+account+matches+that+email+or+username%2C+we%E2%80%99ve+sent+a+reset+link.+Check+your+inbox+and+spam+folder.");
