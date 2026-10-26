@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ProfileMenu } from "@/app/profile-menu";
 import { notFound, redirect } from "next/navigation";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
@@ -41,7 +42,7 @@ export default async function ProposalThreadPage({ params, searchParams }: Props
   const statusLabel = isAccepted ? "Accepted · Shared project ready" : proposal.status === "terminated" ? "Closed proposal" : acceptedByMe ? "You accepted · Waiting for the other person" : acceptedByOther ? "They accepted · Your response needed" : proposal.creator_id === user.id ? `Awaiting response from ${otherName}` : `Awaiting your response`;
 
   return <main className="opportunities-shell proposal-detail-page">
-    <header className="app-header"><Link className="brand" href="/opportunities"><span className="brand-icon" aria-hidden="true">♫</span><span>Muxics<span className="brand-dot">.</span></span></Link><nav className="app-nav" aria-label="Main navigation"><Link href="/discover">Explore</Link><Link href="/opportunities">Gigs</Link><Link href="/applications">Applications</Link><Link href="/projects">Projects</Link><Link href="/proposals" aria-current="page">Proposals</Link></nav><div className="app-header-actions"><Link className="icon-link" href="/notifications" aria-label="Notifications">♧</Link><Link className="app-user-dot" href="/settings/profile" aria-label="Profile settings">♫</Link></div></header>
+    <header className="app-header"><Link className="brand" href="/opportunities"><span className="brand-icon" aria-hidden="true">♫</span><span>Muxics<span className="brand-dot">.</span></span></Link><nav className="app-nav" aria-label="Main navigation"><Link href="/discover">Explore</Link><Link href="/opportunities">Gigs</Link><Link href="/applications">Applications</Link><Link href="/projects">Projects</Link><Link href="/proposals" aria-current="page">Proposals</Link></nav><div className="app-header-actions"><Link className="icon-link" href="/notifications" aria-label="Notifications">♧</Link><ProfileMenu /></div></header>
     <section className="proposal-detail-wrap">
       <div className="proposal-detail-topline"><Link href="/proposals">← Back to proposals</Link><span>PROPOSAL · {id.slice(0, 8).toUpperCase()}</span><time>Created {dateLabel(proposal.created_at)} IST</time></div>
       {message && <p className="notice notice-success" role="status">{message}</p>}{error && <p className="notice notice-error" role="alert">{error}</p>}

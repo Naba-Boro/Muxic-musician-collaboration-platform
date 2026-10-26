@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ProfileMenu } from "@/app/profile-menu";
 import { redirect } from "next/navigation";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
@@ -56,7 +57,7 @@ export default async function ApplicationsPage({ searchParams }: Props) {
   });
 
   return <main className="opportunities-shell applications-shell">
-    <header className="app-header"><Link className="brand" href="/opportunities"><span className="brand-icon" aria-hidden="true">♫</span><span>Muxics<span className="brand-dot">.</span></span></Link><nav className="app-nav" aria-label="Main navigation"><Link href="/discover">Discover</Link><Link href="/opportunities">Gigs</Link><Link href="/applications" aria-current="page">Applications</Link><Link href="/projects">Projects</Link><Link href="/settings/profile">Profile</Link></nav><div className="app-header-actions"><Link className="icon-link" href="/notifications" aria-label="Notifications">♧</Link><Link className="app-user-dot" href="/settings/profile" aria-label="Profile settings">♫</Link></div></header>
+    <header className="app-header"><Link className="brand" href="/opportunities"><span className="brand-icon" aria-hidden="true">♫</span><span>Muxics<span className="brand-dot">.</span></span></Link><nav className="app-nav" aria-label="Main navigation"><Link href="/discover">Discover</Link><Link href="/opportunities">Gigs</Link><Link href="/applications" aria-current="page">Applications</Link><Link href="/projects">Projects</Link><Link href="/settings/profile">Profile</Link></nav><div className="app-header-actions"><Link className="icon-link" href="/notifications" aria-label="Notifications">♧</Link><ProfileMenu /></div></header>
     <section className="feed-wrap"><ApplicationsDashboard items={items} message={message} error={error} /></section>
     <nav className="mobile-bottom-nav" aria-label="Mobile navigation"><Link href="/discover"><span aria-hidden="true">◎</span>Explore</Link><Link href="/opportunities"><span aria-hidden="true">▢</span>Gigs</Link><Link href="/applications" aria-current="page"><span aria-hidden="true">▤</span>Applications</Link><Link href="/projects"><span aria-hidden="true">◉</span>Projects</Link><Link href="/settings/profile"><span aria-hidden="true">♙</span>Profile</Link></nav>
   </main>;

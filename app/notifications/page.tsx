@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ProfileMenu } from "@/app/profile-menu";
 import { redirect } from "next/navigation";
 import { extendGigDeadline, markNotificationsRead } from "@/app/actions";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
@@ -97,7 +98,7 @@ export default async function NotificationsPage({ searchParams }: { searchParams
   const readNotifications = filtered.filter((item) => Boolean(item.read_at));
 
   return <main className="opportunities-shell studio-notifications-page">
-    <header className="app-header"><Link className="brand" href="/opportunities"><span className="brand-icon" aria-hidden="true">♫</span><span>Muxics<span className="brand-dot">.</span></span></Link><nav className="app-nav" aria-label="Main navigation"><Link href="/discover">Explore</Link><Link href="/opportunities">Gigs</Link><Link href="/applications">Applications</Link><Link href="/projects">Projects</Link><Link href="/proposals">Proposals</Link></nav><div className="app-header-actions"><Link className="icon-link" href="/notifications" aria-current="page" aria-label="Notifications">♧{unreadCount > 0 && <i className="notification-header-dot" />}</Link><Link className="app-user-dot" href="/settings/profile" aria-label="Profile settings">♫</Link></div></header>
+    <header className="app-header"><Link className="brand" href="/opportunities"><span className="brand-icon" aria-hidden="true">♫</span><span>Muxics<span className="brand-dot">.</span></span></Link><nav className="app-nav" aria-label="Main navigation"><Link href="/discover">Explore</Link><Link href="/opportunities">Gigs</Link><Link href="/applications">Applications</Link><Link href="/projects">Projects</Link><Link href="/proposals">Proposals</Link></nav><div className="app-header-actions"><Link className="icon-link" href="/notifications" aria-current="page" aria-label="Notifications">♧{unreadCount > 0 && <i className="notification-header-dot" />}</Link><ProfileMenu /></div></header>
 
     <div className="studio-notifications-wrap">
       <div className="studio-notifications-kicker"><span>CONSOLE / ROUTING / <b>INCOMING TELEMETRY &amp; FEED</b></span><span>ACTIVITY FEED · IST</span></div>

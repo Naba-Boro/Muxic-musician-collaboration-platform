@@ -1,10 +1,10 @@
 import Link from "next/link";
+import { ProfileMenu } from "@/app/profile-menu";
 import { redirect } from "next/navigation";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
 
 export const instant = false;
-import { signOut } from "../actions";
 import { OpportunityFeed, type Opportunity } from "./opportunity-feed";
 
 export default async function OpportunitiesPage() {
@@ -56,8 +56,7 @@ export default async function OpportunitiesPage() {
         </nav>
         <div className="app-header-actions">
           <Link className="icon-link" href="/notifications" aria-label="Notifications">♧</Link>
-          <Link className="app-user-dot" href="/settings/profile" aria-label="Profile settings">{signedInName.slice(0, 1).toUpperCase()}</Link>
-          <form action={signOut}><button className="signout-button" type="submit">Sign out</button></form>
+          <ProfileMenu />
         </div>
       </header>
 

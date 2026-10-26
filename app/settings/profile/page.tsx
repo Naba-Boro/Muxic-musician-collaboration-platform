@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ProfileMenu } from "@/app/profile-menu";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
@@ -38,7 +39,7 @@ export default async function ProfileSettingsPage({ searchParams }: Props) {
   const publicProfileUrl = `/profiles/${profile.username}`;
 
   return <main className="opportunities-shell profile-settings-page">
-    <header className="app-header"><Link className="brand" href="/opportunities"><span className="brand-icon" aria-hidden="true">♫</span><span>Muxics<span className="brand-dot">.</span></span></Link><nav className="app-nav" aria-label="Main navigation"><Link href="/discover">Explore</Link><Link href="/opportunities">Gigs</Link><Link href="/applications">Applications</Link><Link href="/projects">Projects</Link><Link href="/proposals">Proposals</Link></nav><div className="app-header-actions"><Link className="icon-link" href="/notifications" aria-label="Notifications">♧</Link><Link className="app-user-dot" href="/settings/profile" aria-label="Profile settings">{profile.display_name.slice(0, 1).toUpperCase()}</Link></div></header>
+    <header className="app-header"><Link className="brand" href="/opportunities"><span className="brand-icon" aria-hidden="true">♫</span><span>Muxics<span className="brand-dot">.</span></span></Link><nav className="app-nav" aria-label="Main navigation"><Link href="/discover">Explore</Link><Link href="/opportunities">Gigs</Link><Link href="/applications">Applications</Link><Link href="/projects">Projects</Link><Link href="/proposals">Proposals</Link></nav><div className="app-header-actions"><Link className="icon-link" href="/notifications" aria-label="Notifications">♧</Link><ProfileMenu /></div></header>
 
     <div className="profile-settings-wrap">
       <div className="profile-settings-breadcrumb"><Link href={publicProfileUrl}>← Back to profile</Link><span>STUDIO CONSOLE / PREFERENCES / PROFILE SETTINGS</span></div>

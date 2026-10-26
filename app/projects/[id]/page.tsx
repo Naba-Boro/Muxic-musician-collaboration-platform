@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ProfileMenu } from "@/app/profile-menu";
 import { notFound, redirect } from "next/navigation";
 import { completeProject, deleteProjectHistoryCopy, recordProjectExit, respondToProjectExit } from "@/app/actions";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
@@ -52,7 +53,7 @@ export default async function ProjectDetailPage({ params, searchParams }: {
   const activeMembers = projectMembers.filter((member) => member.status === "active");
 
   return <main className="opportunities-shell shared-project-page">
-    <header className="app-header"><Link className="brand" href="/opportunities"><span className="brand-icon" aria-hidden="true">♫</span><span>Muxics<span className="brand-dot">.</span></span></Link><nav className="app-nav" aria-label="Main navigation"><Link href="/discover">Explore</Link><Link href="/opportunities">Gigs</Link><Link href="/applications">Applications</Link><Link href="/projects" aria-current="page">Projects</Link><Link href="/settings/profile">Profile</Link></nav><div className="app-header-actions"><Link className="icon-link" href="/notifications" aria-label="Notifications">♧</Link><Link className="app-user-dot" href="/settings/profile" aria-label="Profile settings">♫</Link></div></header>
+    <header className="app-header"><Link className="brand" href="/opportunities"><span className="brand-icon" aria-hidden="true">♫</span><span>Muxics<span className="brand-dot">.</span></span></Link><nav className="app-nav" aria-label="Main navigation"><Link href="/discover">Explore</Link><Link href="/opportunities">Gigs</Link><Link href="/applications">Applications</Link><Link href="/projects" aria-current="page">Projects</Link><Link href="/settings/profile">Profile</Link></nav><div className="app-header-actions"><Link className="icon-link" href="/notifications" aria-label="Notifications">♧</Link><ProfileMenu /></div></header>
     <section className="shared-project-wrap">
       <div className="shared-project-breadcrumb"><Link href="/projects">← Projects</Link><span>/</span><span>{project.title}</span><code>ID: PRJ-{id.slice(0, 6).toUpperCase()}</code></div>
       {query.error && <p className="notice notice-error" role="alert">{query.error}</p>}{query.message && <p className="notice notice-success" role="status">{query.message}</p>}

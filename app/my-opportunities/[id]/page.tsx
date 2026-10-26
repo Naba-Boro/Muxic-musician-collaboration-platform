@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ProfileMenu } from "@/app/profile-menu";
 import { notFound, redirect } from "next/navigation";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
@@ -40,7 +41,7 @@ export default async function ManageOpportunityPage({ params, searchParams }: Pr
   const deadlineMin = dateInput(gig.deadline_at);
   const deadlineDate = dateInput(gig.deadline_at, 1);
   return <main className="opportunities-shell applicant-review-page">
-    <header className="app-header"><Link className="brand" href="/opportunities"><span className="brand-icon">♫</span><span>Muxics<span className="brand-dot">.</span></span></Link><nav className="app-nav" aria-label="Main navigation"><Link href="/opportunities">Explore</Link><Link href="/opportunities" aria-current="page">Gigs</Link><Link href="/applications">Applications</Link><Link href="/projects">Projects</Link><Link href="/settings/profile">Profile</Link></nav><div className="app-header-actions"><Link className="icon-link" href="/notifications" aria-label="Notifications">♧</Link><Link className="app-user-dot" href="/settings/profile" aria-label="Profile settings">♫</Link></div></header>
+    <header className="app-header"><Link className="brand" href="/opportunities"><span className="brand-icon">♫</span><span>Muxics<span className="brand-dot">.</span></span></Link><nav className="app-nav" aria-label="Main navigation"><Link href="/opportunities">Explore</Link><Link href="/opportunities" aria-current="page">Gigs</Link><Link href="/applications">Applications</Link><Link href="/projects">Projects</Link><Link href="/settings/profile">Profile</Link></nav><div className="app-header-actions"><Link className="icon-link" href="/notifications" aria-label="Notifications">♧</Link><ProfileMenu /></div></header>
     <section className="applicant-review-wrap">
       <div className="applicant-review-breadcrumb"><Link href="/my-opportunities">My opportunities</Link><span>›</span><Link href={"/opportunities/" + gig.id}>{gig.id.slice(0, 8).toUpperCase()}</Link><span>›</span><strong>Applicant review</strong></div>
       {message && <p className="notice notice-success" role="status">{message}</p>}{error && <p className="notice notice-error" role="alert">{error}</p>}

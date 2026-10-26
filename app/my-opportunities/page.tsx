@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ProfileMenu } from "@/app/profile-menu";
 import { redirect } from "next/navigation";
 import { closeGig, extendGigDeadline } from "@/app/actions";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
@@ -44,7 +45,7 @@ export default async function MyOpportunitiesPage({ searchParams }: Props) {
   });
 
   return <main className="opportunities-shell my-opportunities-page">
-    <header className="app-header"><Link className="brand" href="/opportunities"><span className="brand-icon" aria-hidden="true">♫</span><span>Muxics<span className="brand-dot">.</span></span></Link><nav className="app-nav" aria-label="Main navigation"><Link href="/discover">Explore</Link><Link href="/opportunities" aria-current="page">Gigs</Link><Link href="/applications">Applications</Link><Link href="/projects">Projects</Link><Link href="/settings/profile">Profile</Link></nav><div className="app-header-actions"><Link className="icon-link" href="/notifications" aria-label="Notifications">♧</Link><Link className="app-user-dot" href="/settings/profile" aria-label="Profile settings">♫</Link></div></header>
+    <header className="app-header"><Link className="brand" href="/opportunities"><span className="brand-icon" aria-hidden="true">♫</span><span>Muxics<span className="brand-dot">.</span></span></Link><nav className="app-nav" aria-label="Main navigation"><Link href="/discover">Explore</Link><Link href="/opportunities" aria-current="page">Gigs</Link><Link href="/applications">Applications</Link><Link href="/projects">Projects</Link><Link href="/settings/profile">Profile</Link></nav><div className="app-header-actions"><Link className="icon-link" href="/notifications" aria-label="Notifications">♧</Link><ProfileMenu /></div></header>
     <section className="my-opportunities-wrap">
       <div className="my-opportunities-heading"><div><span className="eyebrow">STUDIO CONSOLE · IST +05:30</span><h1>My posted opportunities</h1><p>Manage your opportunities, deadlines, and incoming applicants.</p></div><Link className="my-post-button" href="/opportunities/new"><span aria-hidden="true">＋</span> Post new opportunity</Link></div>
       {message && <p className="notice notice-success" role="status">{message}</p>}{error && <p className="notice notice-error" role="alert">{error}</p>}
