@@ -126,7 +126,7 @@ export async function signUp(formData: FormData) {
     password,
     options: {
       data: { username, full_name: fullName },
-      emailRedirectTo: `${appSiteUrl()}/auth/callback`,
+      emailRedirectTo: `${appSiteUrl()}/auth/callback?flow=signup&next=%2Fopportunities`,
     },
   });
   const userId = signUpData.user?.id;
@@ -211,7 +211,7 @@ export async function signUp(formData: FormData) {
   }
 
   if (!signUpData.session) {
-    redirect("/signup?message=Account+created.+Check+your+email+and+click+the+verification+link+to+activate+your+profile.");
+    redirect("/signup/check-email");
   }
   redirect("/opportunities");
 }
@@ -290,7 +290,7 @@ export async function requestPasswordReset(formData: FormData) {
 
   const supabase = await createServerClient();
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${appSiteUrl()}/auth/callback?next=/reset-password`,
+    redirectTo: `${appSiteUrl()}/auth/callback?flow=password-reset&next=%2Freset-password`,
   });
   if (error) redirect("/forgot-password?error=We+couldn%E2%80%99t+send+a+reset+email.+Try+again+later.");
   redirect("/forgot-password?message=If+an+account+matches+that+email+or+username%2C+we%E2%80%99ve+sent+a+reset+link.+Check+your+inbox+and+spam+folder.");

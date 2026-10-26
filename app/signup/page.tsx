@@ -5,14 +5,14 @@ import { ProfileAvatarInput, SignupProfileFields } from "./signup-profile-fields
 
 export const instant = false;
 
-type SignupPageProps = { searchParams: Promise<{ error?: string; message?: string }> };
+type SignupPageProps = { searchParams: Promise<{ error?: string }> };
 
 function NoteMark() {
   return <span className="signup-note-mark" aria-hidden="true"><i /><i /><i /><i /><i /></span>;
 }
 
 export default async function SignupPage({ searchParams }: SignupPageProps) {
-  const { error, message } = await searchParams;
+  const { error } = await searchParams;
   return (
     <main className="signup-page">
       <header className="signup-topbar">
@@ -42,7 +42,6 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
         <section className="signup-form-column" aria-label="Create a Muxics account">
           <div className="signup-form-heading"><span className="signup-kicker"><i /> SET UP YOUR PUBLIC PROFILE</span><h2>Join Muxics</h2><p>Start with the details musicians need to find and work with you.</p></div>
           {error && <p className="notice notice-error" role="alert">{error}</p>}
-          {message && <p className="notice notice-success" role="status">{message}</p>}
           <form className="signup-form" action={signUp}>
             <div className="signup-section-title"><span>01</span><div><h3>Credentials & identity</h3><p>Used to create and access your account.</p></div><small>REQUIRED</small></div>
             <ProfileAvatarInput />

@@ -5,13 +5,15 @@ export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
   const requestedNext = searchParams.get("next") ?? "/opportunities";
+  const flow = searchParams.get("flow");
   const next = requestedNext.startsWith("/") && !requestedNext.startsWith("//") ? requestedNext : "/opportunities";
+  const isSignupConfirmation = flow === "signup" || (!flow && next !== "/reset-password");
   if (code) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
       const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
+      if (user && isSignupConfirmation) {
         const { data: profile, error: lookupError } = await supabase
           .from("profiles")
           .select("onboarding_completed")
