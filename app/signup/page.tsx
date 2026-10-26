@@ -1,23 +1,31 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { signUp } from "../actions";
 import { AudioDemoInput } from "./audio-demo-input";
 import { ProfileAvatarInput, SignupProfileFields } from "./signup-profile-fields";
 
 export const instant = false;
 
-type SignupPageProps = { searchParams: Promise<{ error?: string }> };
+type SignupPageProps = { searchParams: Promise<{ error?: string; type?: string; token_hash?: string; code?: string }> };
 
 function NoteMark() {
   return <span className="signup-note-mark" aria-hidden="true"><i /><i /><i /><i /><i /></span>;
 }
 
 export default async function SignupPage({ searchParams }: SignupPageProps) {
-  const { error } = await searchParams;
+  const { error, type, token_hash: tokenHash, code } = await searchParams;
+  if (type === "recovery" && (tokenHash || code)) {
+    const recoveryParams = new URLSearchParams({ type });
+    if (tokenHash) recoveryParams.set("token_hash", tokenHash);
+    if (code) recoveryParams.set("code", code);
+    redirect(`/auth/recovery?${recoveryParams.toString()}`);
+  }
+
   return (
     <main className="signup-page">
       <header className="signup-topbar">
         <Link className="signup-brand" href="/" aria-label="Muxics home"><span className="signup-brand-icon"><NoteMark /></span><span>Muxics<span className="brand-dot">.</span></span></Link>
-        <div className="signup-topbar-label"><i /> MUSICIAN PROFILE <span>//</span> REGISTRATION</div>
+        <div className="signup-topbar-label"><i /> MUSICIAN PROFILE <span>{"//"}</span> REGISTRATION</div>
         <div className="signup-topbar-account"><span>Already a member?</span><Link href="/">Sign in <span aria-hidden="true">→</span></Link></div>
       </header>
 
