@@ -117,13 +117,16 @@ export async function signUp(formData: FormData) {
     email,
     password,
     options: {
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"}/auth/callback`,
       data: { username, full_name: fullName },
     },
   });
   const userId = signUpData.user?.id;
   if (signUpError || !userId || !signUpData.user?.identities?.length) {
     redirect("/signup?error=We+couldn%E2%80%99t+create+your+account.+Check+your+details+or+try+signing+in.");
+  }
+  if (!signUpData.session) {
+    await admin.auth.admin.deleteUser(userId);
+    redirect("/signup?error=Instant+signup+isn%E2%80%99t+enabled+yet.+Ask+the+app+owner+to+disable+Confirm+email+in+Supabase+Authentication+settings.");
   }
 
   const extension = demo.type === "audio/mpeg" ? "mp3" : "m4a";
@@ -203,7 +206,7 @@ export async function signUp(formData: FormData) {
     redirect("/signup?error=That+username+is+already+taken.");
   }
 
-  redirect("/?message=Check+your+email+to+verify+your+account.");
+  redirect("/opportunities");
 }
 
 export async function signOut() {

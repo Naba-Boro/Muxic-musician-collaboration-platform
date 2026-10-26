@@ -10,6 +10,8 @@ Muxics is a collaboration platform for musicians in India. Members can create a 
 
 - Use the test account credentials supplied separately, or create your own account with an email address you can access.
 - The supplied demo accounts use reserved `example.com` addresses. They are already confirmed for sign-in, but cannot receive verification or password-reset emails.
+- Once configured, email confirmation will be temporarily disabled so new accounts can use Muxics immediately. Use an email address you control; ownership will not be confirmed, and password recovery still depends on email delivery being configured.
+- Immediate signup requires the app owner to turn off **Confirm email** in the Supabase Email provider settings. If it is still enabled, signup displays a setup message instead of leaving an unverified account behind.
 - If creating an account, use a real email inbox and only upload audio and images you have permission to share. Signup requires an MP3 or M4A demo of 60 seconds or less and up to 15 MB.
 - Use fictional test content. Do not enter private client information, real payment details, or confidential unreleased music.
 - Actions such as publishing a gig, applying, sending/accepting a proposal, or blocking an account change shared test data. Coordinate with other testers if you share accounts.
@@ -32,15 +34,15 @@ Skip this section if you are signing in with a supplied demo account.
 4. Choose a primary specialty, add any secondary specialties and genres, and write a short musician bio.
 5. Upload a profile photo if you want, then upload one MP3 or M4A demo (maximum 60 seconds and 15 MB).
 6. Confirm that you are at least 18 and have permission to share the audio, then submit.
-7. Check your email and follow the verification link. Return to Muxics and sign in.
+7. After submission, you should be signed in and taken to the gigs area without waiting for an email.
 
-**Please review:** Were the required fields and audio limits clear? Did the app explain what happens after account creation? Was email verification easy to complete? Did any validation message fail to explain how to fix the problem?
+**Please review:** Were the required fields and audio limits clear? Did the app explain what happens after account creation? Did you arrive signed in? Did any validation message fail to explain how to fix the problem?
 
 ## 2. Sign in and recover access
 
 1. Sign in using your email address or username and password.
 2. Confirm that you arrive at the opportunities/gigs area and can find the main navigation.
-3. Sign out, then try **Forgot password** only if you have access to the account email. Enter the email or username and follow the message sent to your inbox. Open the reset link and choose a new password.
+3. Sign out, then try **Forgot password** only if you have access to the account email. Enter the email or username and follow the message sent to your inbox. Open the reset link and choose a new password. Email delivery must be configured for public addresses.
 
 Do not test password reset with the supplied `example.com` demo account because it cannot receive email.
 
@@ -138,7 +140,7 @@ After exploring the features you have time for, please send feedback with:
 
 ## Current-scope notes for reviewers
 
-The following capabilities shown in some design concepts are not part of the current working flow: Muxics escrow/payment processing, verified delivery milestones, project stem/file uploads in proposal or project chat, DAW sync/telemetry, email notification delivery/preferences, and full account deletion/security management. Please tell us if these would be valuable, but distinguish that product feedback from a broken existing control.
+The following capabilities shown in some design concepts are not part of the current working flow: Muxics escrow/payment processing, verified delivery milestones, project stem/file uploads in proposal or project chat, DAW sync/telemetry, email notification delivery/preferences, and full account deletion/security management. Email confirmation is temporarily disabled; password reset still requires working email delivery. Please tell us if these other capabilities would be valuable, but distinguish that product feedback from a broken existing control.
 
 ## Session end
 

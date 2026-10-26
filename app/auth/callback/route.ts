@@ -11,5 +11,5 @@ export async function GET(request: NextRequest) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) return NextResponse.redirect(new URL(next, origin));
   }
-  return NextResponse.redirect(new URL("/?error=That+verification+link+could+not+be+used.+Try+signing+in+or+request+a+new+link.", origin));
+  return NextResponse.redirect(new URL("/?error=That+sign-in+link+could+not+be+used.+Try+signing+in+or+request+a+new+link.", origin));
 }

@@ -70,7 +70,7 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
 
             <label className="signup-consent"><input type="checkbox" name="ageConfirmed" required /><span>I confirm I’m 18 or older and have the right to share the audio demo I uploaded.</span></label>
             <button className="signup-create-button" type="submit">Create my account <span aria-hidden="true">→</span></button>
-            <p className="signup-email-note">We’ll email you a verification link before you can sign in.</p>
+            <p className="signup-email-note">Your account will be ready to use as soon as it’s created.</p>
           </form>
         </section>
       </div>
