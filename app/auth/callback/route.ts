@@ -18,10 +18,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(recovery);
   }
 
-  if (tokenHash && (tokenType === "signup" || tokenType === "email")) {
+  if (tokenHash) {
     const confirmation = new URL("/auth/confirm-signup", origin);
     confirmation.searchParams.set("token_hash", tokenHash);
-    confirmation.searchParams.set("type", tokenType);
+    if (tokenType) confirmation.searchParams.set("type", tokenType);
     return NextResponse.redirect(confirmation);
   }
 

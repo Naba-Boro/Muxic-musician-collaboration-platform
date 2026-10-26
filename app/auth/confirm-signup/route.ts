@@ -22,6 +22,16 @@ export async function GET(request: NextRequest) {
   }
 
   const supabase = await createClient();
+  if (tokenHash) {
+    // Some recovery templates send the token hash through the signup
+    // confirmation route. Let Supabase validate the token's actual purpose
+    // before treating it as a signup verification token.
+    const { error: recoveryError } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: "recovery" });
+    if (!recoveryError) {
+      return NextResponse.redirect(new URL("/reset-password", origin));
+    }
+  }
+
   const { error: verificationError } = tokenHash
     ? tokenType === "signup" || tokenType === "email"
       ? await supabase.auth.verifyOtp({ token_hash: tokenHash, type: tokenType })
