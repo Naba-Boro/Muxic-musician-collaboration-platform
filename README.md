@@ -18,9 +18,9 @@ Muxics helps musicians across India discover collaborators and hiring opportunit
    The secret key is server-only. Never prefix it with `NEXT_PUBLIC_` or expose it in browser code.
 
 4. In the Supabase Dashboard, enable **Integrations → Cron** before applying the migration. The migration schedules the hourly job that sends 24-hour gig deadline reminders and closes expired gigs. If Cron is enabled after applying the migration, schedule `select public.process_gig_deadlines();` to run hourly.
-5. Open **SQL Editor** in the Supabase Dashboard, paste and run [`supabase/migrations/202610250001_initial_schema.sql`](./supabase/migrations/202610250001_initial_schema.sql).
-6. In **Authentication → URL Configuration**, set the site URL to `http://localhost:3000` and add `http://localhost:3000/auth/callback` as a redirect URL.
-7. To allow immediate account access without email verification, open **Authentication → Sign In / Providers → Email** and turn off **Confirm email**. The signup flow checks for an immediate session and removes the newly created Auth user if this setting is still enabled.
+5. Open **SQL Editor** in the Supabase Dashboard and apply every SQL file in [`supabase/migrations/`](./supabase/migrations/) in filename order. Do not skip later migrations; the profile visibility migration keeps unverified accounts and their assets private.
+6. In **Authentication → URL Configuration**, set the site URL to `http://localhost:3000`. Add these local redirect URLs: `http://localhost:3000/auth/confirm-signup`, `http://localhost:3000/auth/recovery`, and `http://localhost:3000/auth/callback` (for older email links). Add the matching paths for the deployed site's host as well, and set `NEXT_PUBLIC_SITE_URL` to that site's origin.
+7. Keep **Confirm email** enabled under **Authentication → Sign In / Providers → Email**. Route signup confirmations to `/auth/confirm-signup` and password recovery emails to `/auth/recovery` with `type=recovery` (or preserve the recovery redirect from the app). Do not route reset emails through signup verification. Signup saves the profile and demo privately, then sends the user to the check-email page; confirmation activates the profile.
 8. Install dependencies and start the development server:
 
    ```bash
@@ -32,7 +32,7 @@ Muxics helps musicians across India discover collaborators and hiring opportunit
 
 ## Implemented in this starter
 
-- Email and username sign-in, signup with a required short demo upload, immediate access after signup, and password reset.
+- Email and username sign-in, signup with a required short demo upload and email verification, and password reset.
 - Public-to-members musician profiles, profile editing, demo playback, and discovery by specialty/location.
 - Opportunity creation, search/filtering, applications, poster decisions, and applicant status tracking.
 - Direct project proposals with replies and mutual acceptance.

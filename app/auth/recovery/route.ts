@@ -21,6 +21,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(new URL("/forgot-password?error=This+reset+link+is+invalid+or+has+expired.+Request+a+new+one.", origin));
     }
   } else if (code) {
+    if (tokenType && tokenType !== "recovery") {
+      return NextResponse.redirect(new URL("/forgot-password?error=This+reset+link+is+invalid+or+has+expired.+Request+a+new+one.", origin));
+    }
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (error) {
       return NextResponse.redirect(new URL("/forgot-password?error=This+reset+link+is+invalid+or+has+expired.+Request+a+new+one.", origin));
