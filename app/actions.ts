@@ -306,7 +306,8 @@ export async function updatePassword(formData: FormData) {
   if (!user) redirect("/forgot-password?error=Your+reset+link+has+expired.+Request+a+new+one+and+open+it+on+this+device.");
   const { error } = await supabase.auth.updateUser({ password });
   if (error) redirect("/forgot-password?error=Your+reset+link+has+expired.+Request+a+new+one+and+open+it+on+this+device.");
-  await supabase.auth.signOut({ scope: "local" });
+  const { error: signOutError } = await supabase.auth.signOut({ scope: "local" });
+  if (signOutError) redirect("/reset-password?status=signout-error");
   redirect("/?message=Your+password+has+been+updated.+Sign+in+to+continue.");
 }
 
