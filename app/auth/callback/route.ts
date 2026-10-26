@@ -1,5 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { createPasswordRecoveryProof } from "@/lib/supabase/recovery-proof";
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
@@ -46,6 +48,11 @@ export async function GET(request: NextRequest) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
       const { data: { user } } = await supabase.auth.getUser();
+      if (nextPath === "/reset-password") {
+        if (!user) return NextResponse.redirect(new URL("/forgot-password?error=That+reset+link+could+not+be+used.+Request+a+new+one.", origin));
+        const cookie = createPasswordRecoveryProof(user.id);
+        (await cookies()).set(cookie.name, cookie.value, cookie.options);
+      }
       if (user && isSignupConfirmation) {
         const { data: profile, error: lookupError } = await supabase
           .from("profiles")

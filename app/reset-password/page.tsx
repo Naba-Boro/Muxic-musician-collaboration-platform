@@ -1,4 +1,8 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { isValidPasswordRecoveryProof, PASSWORD_RECOVERY_COOKIE } from "@/lib/supabase/recovery-proof";
 import { PasswordResetForm } from "../auth/auth-forms";
 
 export const instant = false;
@@ -12,10 +16,18 @@ function WaveMark() {
 export default async function ResetPasswordPage({ searchParams }: Props) {
   const { error, status } = await searchParams;
   const signOutFailed = status === "signout-error";
+  if (!signOutFailed) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    const recoveryProof = (await cookies()).get(PASSWORD_RECOVERY_COOKIE)?.value;
+    if (!user || !isValidPasswordRecoveryProof(recoveryProof, user.id)) {
+      redirect("/forgot-password?error=Open+a+valid+password+reset+link+to+continue.");
+    }
+  }
   return <main className="auth-page recovery-page">
     <header className="auth-topbar">
       <Link href="/" className="auth-brand" aria-label="Muxics home"><span className="auth-brand-mark"><WaveMark /></span><span>Muxics<span className="brand-dot">.</span></span></Link>
-      <div className="auth-session"><span className="auth-live-dot" /> ACCOUNT RECOVERY <span className="auth-topbar-divider">//</span> SET PASSWORD</div>
+      <div className="auth-session"><span className="auth-live-dot" /> ACCOUNT RECOVERY <span className="auth-topbar-divider">{"//"}</span> SET PASSWORD</div>
       <Link className="auth-route" href="/">← BACK TO <b>SIGN IN</b></Link>
     </header>
 

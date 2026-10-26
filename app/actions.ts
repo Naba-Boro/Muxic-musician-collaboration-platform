@@ -2,11 +2,17 @@
 
 import { createClient } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { createClient as createServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
+import { isValidPasswordRecoveryProof, PASSWORD_RECOVERY_COOKIE } from "@/lib/supabase/recovery-proof";
 
 function clean(value: FormDataEntryValue | null) {
   return typeof value === "string" ? value.trim() : "";
+}
+
+function passwordValue(value: FormDataEntryValue | null) {
+  return typeof value === "string" ? value : "";
 }
 
 function adminClient() {
@@ -34,7 +40,7 @@ export async function signIn(formData: FormData) {
   if (!isSupabaseConfigured()) redirect("/?error=Supabase+is+not+connected+yet.+Set+up+the+project+credentials+in+.env.local.");
 
   const identifier = clean(formData.get("identifier")).toLowerCase();
-  const password = clean(formData.get("password"));
+  const password = passwordValue(formData.get("password"));
   if (!identifier || !password) redirect("/?error=Enter+your+email+or+username+and+password.");
 
   let email = identifier;
@@ -76,7 +82,7 @@ export async function signUp(formData: FormData) {
   const additionalSpecialty = clean(formData.get("secondarySpecialtiesOther"));
   const secondarySpecialties = [...new Set(selectedSecondarySpecialties.map((item) => item === "Other" ? additionalSpecialty : item).filter(Boolean))];
   const additionalGenre = clean(formData.get("genreOther"));
-  const password = clean(formData.get("password"));
+  const password = passwordValue(formData.get("password"));
   const demo = formData.get("demo");
   const avatarValue = formData.get("avatar");
   const avatar = avatarValue instanceof File && avatarValue.size > 0 ? avatarValue : null;
@@ -219,7 +225,8 @@ export async function signUp(formData: FormData) {
 export async function signOut() {
   if (isSupabaseConfigured()) {
     const supabase = await createServerClient();
-    await supabase.auth.signOut();
+    const { error } = await supabase.auth.signOut();
+    if (error) redirect("/?error=We+couldn%E2%80%99t+confirm+sign-out.+Please+try+again.");
   }
   redirect("/");
 }
@@ -297,15 +304,18 @@ export async function requestPasswordReset(formData: FormData) {
 }
 
 export async function updatePassword(formData: FormData) {
-  const password = clean(formData.get("password"));
-  const confirmation = clean(formData.get("confirmPassword"));
+  const password = passwordValue(formData.get("password"));
+  const confirmation = passwordValue(formData.get("confirmPassword"));
   if (password.length < 8) redirect("/reset-password?error=Use+at+least+8+characters.");
   if (password !== confirmation) redirect("/reset-password?error=The+passwords+don%E2%80%99t+match.+Check+both+fields+and+try+again.");
   const supabase = await createServerClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/forgot-password?error=Your+reset+link+has+expired.+Request+a+new+one+and+open+it+on+this+device.");
+  const cookieStore = await cookies();
+  const recoveryProof = cookieStore.get(PASSWORD_RECOVERY_COOKIE)?.value;
+  if (!user || !isValidPasswordRecoveryProof(recoveryProof, user.id)) redirect("/forgot-password?error=Your+reset+link+has+expired.+Request+a+new+one+and+open+it+on+this+device.");
   const { error } = await supabase.auth.updateUser({ password });
-  if (error) redirect("/forgot-password?error=Your+reset+link+has+expired.+Request+a+new+one+and+open+it+on+this+device.");
+  if (error) redirect("/reset-password?error=Your+password+wasn%E2%80%99t+accepted.+Check+the+password+requirements+or+request+a+new+reset+link.");
+  cookieStore.delete(PASSWORD_RECOVERY_COOKIE);
   const { error: signOutError } = await supabase.auth.signOut({ scope: "local" });
   if (signOutError) redirect("/reset-password?status=signout-error");
   redirect("/?message=Your+password+has+been+updated.+Sign+in+to+continue.");

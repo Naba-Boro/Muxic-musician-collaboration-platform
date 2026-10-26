@@ -1,5 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { createPasswordRecoveryProof } from "@/lib/supabase/recovery-proof";
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
@@ -26,8 +28,10 @@ export async function GET(request: NextRequest) {
     // Some recovery templates send the token hash through the signup
     // confirmation route. Let Supabase validate the token's actual purpose
     // before treating it as a signup verification token.
-    const { error: recoveryError } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: "recovery" });
-    if (!recoveryError) {
+    const { data: recoveryData, error: recoveryError } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: "recovery" });
+    if (!recoveryError && recoveryData.user) {
+      const cookie = createPasswordRecoveryProof(recoveryData.user.id);
+      (await cookies()).set(cookie.name, cookie.value, cookie.options);
       return NextResponse.redirect(new URL("/reset-password", origin));
     }
   }
